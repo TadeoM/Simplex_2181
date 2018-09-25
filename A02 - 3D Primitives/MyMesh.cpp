@@ -172,8 +172,8 @@ void MyMesh::AddQuad(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vT
 	AddVertexPosition(a_vTopLeft);
 	AddVertexPosition(a_vBottomRight);
 	AddVertexPosition(a_vTopRight);
-	std::cout << "Next Tri" << std::endl;
-	std::cout << " X: " << a_vBottomLeft.x << " Y: " << a_vBottomLeft.y << " Z: " << a_vBottomLeft.z << std::endl;
+	//std::cout << "Next Tri" << std::endl;
+	//std::cout << " X: " << a_vBottomLeft.x << " Y: " << a_vBottomLeft.y << " Z: " << a_vBottomLeft.z << std::endl;
 }
 void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 {
@@ -458,6 +458,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 }
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
+	a_nSubdivisions = 6;
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -475,6 +476,17 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	vector3 topCenterPoint = vector3(0, 0.5f * a_fRadius, 0);
 	vector3 bottomCenterPoint = vector3(0, -0.5f * a_fRadius, 0);
+
+	float radiusChange = a_fRadius / a_nSubdivisions;
+	
+	for (int i = 0; i <  a_nSubdivisions / 2; i++)
+	{
+		if (a_nSubdivisions % 2 == 1)
+		{
+
+		}
+		std::cout << "HELLO" << std::endl;
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
