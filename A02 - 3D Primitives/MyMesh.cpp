@@ -491,10 +491,8 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 			tubeRightPoint = (rotation2 * tubeRightPoint) + tubeCenterPoint;
 			//std::cout << " X: " <<  rotation[0][0] << " Y: " << rotation[1][1] << " Z: " << rotation[2][2] << std::endl;
 			printf("X: %.2f  Y: %.2f  Z: %.2f\n", tubeRightPoint.x, tubeRightPoint.y, tubeRightPoint.z);
-			if (j == 0)
-				tubeyBoys[i].push_back(tubeLeftPoint);
-			if (j != 0)
-				tubeyBoys[i].push_back(tubeRightPoint);
+
+			tubeyBoys[i].push_back(tubeRightPoint);
 
 				
 		}
