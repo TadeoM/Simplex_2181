@@ -467,7 +467,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 	rotation = glm::rotate(matrix4(), 3.14159f / 2, vector3(1.0f, 0.0f, 0.0f));
 	
-
+	std::cout << "\n";
 	for (int i = 0; i < a_nSubdivisionsA; i++)
 	{
 		// find the next place that you will draw the following triangle
@@ -480,7 +480,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 		std::vector<vector3> circle;
 		tubeyBoys.push_back(circle);
-
+		printf("Circle: %i\n", i);
 		for (int j = 0; j <= a_nSubdivisionsB; j++)
 		{
 			float tubeNextDegree = tubeDegreeInterval * j;
@@ -490,7 +490,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 			tubeRightPoint = (rotation * (tubeRightPoint - tubeCenterPoint));
 			tubeRightPoint = (rotation2 * tubeRightPoint) + tubeCenterPoint;
 			//std::cout << " X: " <<  rotation[0][0] << " Y: " << rotation[1][1] << " Z: " << rotation[2][2] << std::endl;
-			printf("%.2f  %.2f  %.2f\n", tubeRightPoint.x, tubeRightPoint.y, tubeRightPoint.z);
+			printf("X: %.2f  Y: %.2f  Z: %.2f\n", tubeRightPoint.x, tubeRightPoint.y, tubeRightPoint.z);
 			if (j == 0)
 				tubeyBoys[i].push_back(tubeLeftPoint);
 			if (j != 0)
