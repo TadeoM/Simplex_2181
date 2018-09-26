@@ -424,6 +424,8 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+
+
 void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSubdivisionsA, int a_nSubdivisionsB, vector3 a_v3Color)
 {
 	if (a_fOuterRadius < 0.01f)
@@ -448,9 +450,67 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//std::vector<vector3()> locations;
+
+	vector4 tubeCenterPoint;
+	std::vector<std::vector<vector3>> tubeyBoys;
+	
+	//// set the degree at which each triangle will be made
+	float overallDegreeInterval = 360.0f / a_nSubdivisionsA;
+	float tubeDegreeInterval = 360.0f / a_nSubdivisionsB;
+
+	float tubeRadius = 0.5f * (a_fOuterRadius - a_fInnerRadius);
+	float overallRadius = a_fOuterRadius - tubeRadius;
+
+	matrix4 rotation = matrix4();
+	matrix4 rotation2 = matrix4();
+
+	rotation = glm::rotate(matrix4(), 3.14159f / 2, vector3(1.0f, 0.0f, 0.0f));
+	
+
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		// find the next place that you will draw the following triangle
+		float nextDegree = overallDegreeInterval * i;
+		rotation2 = glm::rotate((-nextDegree *3.14159f) / 180.0f, vector3(0.0f, 1.0f, 0.0f));
+		tubeCenterPoint = vector4(overallRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), 0, overallRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0.0f);
+
+		vector4 tubeLeftPoint;
+		vector4 tubeRightPoint = vector4(tubeRadius * (1 / 180.0f), 0, 0, 0);
+
+		std::vector<vector3> circle;
+		tubeyBoys.push_back(circle);
+
+		for (int j = 0; j <= a_nSubdivisionsB; j++)
+		{
+			float tubeNextDegree = tubeDegreeInterval * j;
+			tubeLeftPoint = tubeRightPoint;
+			tubeRightPoint = tubeCenterPoint +  vector4(tubeRadius * (std::cos((tubeNextDegree * 3.1415f) / 180.0f)), 0, tubeRadius * (std::sin((tubeNextDegree * 3.1415f) / 180.0f)), 0.0f);
+
+			tubeRightPoint = (rotation * (tubeRightPoint - tubeCenterPoint));
+			tubeRightPoint = (rotation2 * tubeRightPoint) + tubeCenterPoint;
+			//std::cout << " X: " <<  rotation[0][0] << " Y: " << rotation[1][1] << " Z: " << rotation[2][2] << std::endl;
+			printf("%.2f  %.2f  %.2f\n", tubeRightPoint.x, tubeRightPoint.y, tubeRightPoint.z);
+			if (j == 0)
+				tubeyBoys[i].push_back(tubeLeftPoint);
+			if (j != 0)
+				tubeyBoys[i].push_back(tubeRightPoint);
+
+				
+		}
+		//std::cout << i << std::endl;
+	};
+
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		for (int j = 0; j < a_nSubdivisionsB; j++)
+		{
+			int nextI = (i + 1) % a_nSubdivisionsA;
+			int nextJ = (j + 1) % a_nSubdivisionsB;
+
+			AddQuad(tubeyBoys[i][j], tubeyBoys[nextI][j], tubeyBoys[i][nextJ], tubeyBoys[nextI][nextJ]);
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -458,7 +518,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 }
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
-	a_nSubdivisions = 6;
+	a_nSubdivisions = 4;
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -478,6 +538,13 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	vector3 bottomCenterPoint = vector3(0, -0.5f * a_fRadius, 0);
 
 	float radiusChange = a_fRadius / a_nSubdivisions;
+	int pairsOfCircles = a_nSubdivisions / 2;
+	float height = 1 * (pairsOfCircles / a_nSubdivisions) ;
+	//std::cout << a_nSubdivisions << std::endl;
+	std::cout << pairsOfCircles;
+
+	float currentRadius = radiusChange;
+
 	
 	for (int i = 0; i <  a_nSubdivisions / 2; i++)
 	{
