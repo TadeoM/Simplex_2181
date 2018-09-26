@@ -450,55 +450,62 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
-	//std::vector<vector3()> locations;
 
+	// declare a center point and a 2d array of vec3 to hold positions
 	vector4 tubeCenterPoint;
-	std::vector<std::vector<vector3>> tubeyBoys;
+	std::vector<std::vector<vector3>> locations;
 	
 	//// set the degree at which each triangle will be made
 	float overallDegreeInterval = 360.0f / a_nSubdivisionsA;
 	float tubeDegreeInterval = 360.0f / a_nSubdivisionsB;
 
+	// the radius of the tubes
+	// the radius of the torus overall
 	float tubeRadius = 0.5f * (a_fOuterRadius - a_fInnerRadius);
 	float overallRadius = a_fOuterRadius - tubeRadius;
 
+	// declare two rations
 	matrix4 rotation = matrix4();
 	matrix4 rotation2 = matrix4();
 
+	// set first rotation
 	rotation = glm::rotate(matrix4(), 3.14159f / 2, vector3(1.0f, 0.0f, 0.0f));
 	
 	std::cout << "\n";
 	for (int i = 0; i < a_nSubdivisionsA; i++)
 	{
-		// find the next place that you will draw the following triangle
+		// find the next place that you will draw the following circle
 		float nextDegree = overallDegreeInterval * i;
-		rotation2 = glm::rotate((-nextDegree *3.14159f) / 180.0f, vector3(0.0f, 1.0f, 0.0f));
+		rotation2 = glm::rotate((-nextDegree *3.14159f) / 180.0f, vector3(0.0f, 1.0f, 0.0f));			// next rotation that will make the tube circle to be directly perpendicular to the center
 		tubeCenterPoint = vector4(overallRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), 0, overallRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0.0f);
 
+		// set the tube points to their starting location
 		vector4 tubeLeftPoint;
 		vector4 tubeRightPoint = vector4(tubeRadius * (1 / 180.0f), 0, 0, 0);
 
+		// make a new circle in the vector
 		std::vector<vector3> circle;
-		tubeyBoys.push_back(circle);
+		locations.push_back(circle);
 		printf("Circle: %i\n", i);
 		for (int j = 0; j <= a_nSubdivisionsB; j++)
 		{
+			// find next place where you will draw the following triangle
 			float tubeNextDegree = tubeDegreeInterval * j;
 			tubeLeftPoint = tubeRightPoint;
 			tubeRightPoint = tubeCenterPoint +  vector4(tubeRadius * (std::cos((tubeNextDegree * 3.1415f) / 180.0f)), 0, tubeRadius * (std::sin((tubeNextDegree * 3.1415f) / 180.0f)), 0.0f);
 
+			// rotate the vectors first along the x to get them to face at the camera, and then rotate along the Y to make theme perpendicular to the center of torus
 			tubeRightPoint = (rotation * (tubeRightPoint - tubeCenterPoint));
 			tubeRightPoint = (rotation2 * tubeRightPoint) + tubeCenterPoint;
 			//std::cout << " X: " <<  rotation[0][0] << " Y: " << rotation[1][1] << " Z: " << rotation[2][2] << std::endl;
 			printf("X: %.2f  Y: %.2f  Z: %.2f\n", tubeRightPoint.x, tubeRightPoint.y, tubeRightPoint.z);
 
-			tubeyBoys[i].push_back(tubeRightPoint);
-
-				
+			locations[i].push_back(tubeRightPoint);
 		}
 		//std::cout << i << std::endl;
 	};
 
+	// take a point and get 3 adjacent points to draw a square 
 	for (int i = 0; i < a_nSubdivisionsA; i++)
 	{
 		for (int j = 0; j < a_nSubdivisionsB; j++)
@@ -516,7 +523,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 }
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
-	a_nSubdivisions = 4;
+	//a_nSubdivisions = 4;
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -532,25 +539,40 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	vector3 topCenterPoint = vector3(0, 0.5f * a_fRadius, 0);
-	vector3 bottomCenterPoint = vector3(0, -0.5f * a_fRadius, 0);
+	std::vector<std::vector<vector4>> topPoints;
+	std::vector<std::vector<vector4>> basePoints;
 
-	float radiusChange = a_fRadius / a_nSubdivisions;
-	int pairsOfCircles = a_nSubdivisions / 2;
-	float height = 1 * (pairsOfCircles / a_nSubdivisions) ;
-	//std::cout << a_nSubdivisions << std::endl;
-	std::cout << pairsOfCircles;
+	vector3 baseCircleCenter = vector4(0, -1 * a_fRadius, 0, 0);
+	vector3 baseCircleLeft;
+	vector3 baseCircleRight = vector4(a_fRadius * std::cos(0), -1 * a_fRadius + (2 * a_fRadius / a_nSubdivisions), 0.5f * a_fRadius * std::sin(0), 0);
 
-	float currentRadius = radiusChange;
+	vector3 topCircleCenter;
+	vector3 topCircleLeft;
+	vector3 topCircleRight;
 
+	float degreeInterval = 360.0f / a_nSubdivisions;
 	
-	for (int i = 0; i <  a_nSubdivisions / 2; i++)
+	for (int i = 0; i <  a_nSubdivisions; i++)
 	{
-		if (a_nSubdivisions % 2 == 1)
+		for (int j = 0; j < a_nSubdivisions; j++)
 		{
+			// get next degree interval
+			float nextDegree = degreeInterval * j;
 
+			baseCircleCenter = vector4(0, -1 * i * (a_fRadius / a_nSubdivisions), 0, 0);
+			baseCircleLeft = baseCircleRight;
+			baseCircleRight = vector4(i*(a_fRadius / a_nSubdivisions) * std::cos(nextDegree * PI / 180), -a_fRadius + i * (a_fRadius / a_nSubdivisions), i * (a_fRadius / a_nSubdivisions) * std::sin(nextDegree * PI / 180), 0);
+
+			topCircleCenter = vector4(0, i * (a_fRadius / a_nSubdivisions), 0, 0);
+			topCircleLeft = topCircleRight;
+			topCircleRight = vector4(i * (a_fRadius / a_nSubdivisions) * std::cos(nextDegree * PI / 180), a_fRadius - i * (a_fRadius / a_nSubdivisions), i * (a_fRadius / a_nSubdivisions) * std::sin(nextDegree * PI / 180), 0);
+		
+			if (j != 0 && i == 2)
+			{
+				AddTri(baseCircleLeft, baseCircleRight, baseCircleLeft);
+				AddTri(topCircleRight, topCircleLeft, topCircleCenter);
+			}
 		}
-		std::cout << "HELLO" << std::endl;
 	}
 
 	// Adding information about color

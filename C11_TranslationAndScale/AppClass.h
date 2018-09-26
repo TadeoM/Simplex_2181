@@ -14,7 +14,19 @@ Date: 2017/05
 
 class Application
 {
-	MyMesh* m_pMesh = nullptr;
+	MyMesh* m_pCube = nullptr;
+	int shape[8][11] = {
+		{ 0,0,1,0,0,0,0,0,1,0,0 },
+	{ 0,0,0,1,0,0,0,1,0,0,0 },
+	{ 0,0,1,1,1,1,1,1,1,0,0 },
+	{ 0,1,1,0,1,1,1,0,1,1,0 },
+	{ 1,1,1,1,1,1,1,1,1,1,1 },
+	{ 1,0,1,1,1,1,1,1,1,0,1 },
+	{ 1,0,1,0,0,0,0,0,1,0,1 },
+	{ 0,0,0,1,1,0,1,1,0,0,0 }
+	};
+	int count;
+	std::vector<std::vector<MyMesh*>> allCubes;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 private:
