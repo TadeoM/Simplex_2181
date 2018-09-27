@@ -16,7 +16,7 @@ class Application
 {
 	MyMesh* m_pCube = nullptr;
 	int shape[8][11] = {
-		{ 0,0,1,0,0,0,0,0,1,0,0 },
+	{ 0,0,1,0,0,0,0,0,1,0,0 },
 	{ 0,0,0,1,0,0,0,1,0,0,0 },
 	{ 0,0,1,1,1,1,1,1,1,0,0 },
 	{ 0,1,1,0,1,1,1,0,1,1,0 },
@@ -25,7 +25,7 @@ class Application
 	{ 1,0,1,0,0,0,0,0,1,0,1 },
 	{ 0,0,0,1,1,0,1,1,0,0,0 }
 	};
-	int count;
+	int direction;
 	std::vector<std::vector<MyMesh*>> allCubes;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
