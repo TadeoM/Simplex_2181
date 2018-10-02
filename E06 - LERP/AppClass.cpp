@@ -46,26 +46,41 @@ void Application::Display(void)
 	// Draw the model
 	m_pModel->PlaySequence();
 
-	//Get a timer
-	static float fTimer = 0;	//store the new timer
-	static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
-	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
+	// get a timer
+	static DWORD DStartingTime = GetTickCount();
+	DWORD DCurrentTime = GetTickCount();
+	DWORD DDelta = DCurrentTime - DStartingTime;
+	float fTimer = static_cast<float>(DDelta / 1000.0f);
+	
+
+	static int step = 0;
+
+	vector3 v3StartPoint = m_stopsList[step];
+	vector3 v3EndPoint = m_stopsList[(step + 1) % m_stopsList.size()];
+
+	
+
+	float fTimeBetweenStops = 1.0f;//in seconds
+	float fPercentage = MapValue(fTimer, 0.0f, fTimeBetweenStops, 0.0f, 1.0f);
+
+	float fStart = 0.0f;
+	float fEnd = 180.0f;
+	float fCurrent = glm::lerp(fStart, fEnd, fPercentage);
 
 	//calculate the current position
-	vector3 v3CurrentPos;
-	
+	vector3 v3CurrentPos = glm::lerp(v3StartPoint, v3EndPoint, fPercentage);
+
+	if (fPercentage >= 1.0f)
+	{
+		step++;
+		//std::cout << fPercentage << std::endl;
+		DStartingTime = GetTickCount();
+		step %= m_stopsList.size();//make sure we are within boundries
+	}
 
 
-
-
-	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
-	//-------------------
-	
-
-
-	
-	matrix4 m4Model = glm::translate(v3CurrentPos);
+	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, glm::radians(fCurrent), AXIS_Z);
+	matrix4 m4Model = glm::translate(m4Rotation, v3EndPoint);
 	m_pModel->SetModelMatrix(m4Model);
 
 	m_pMeshMngr->Print("\nTimer: ");//Add a line on top
@@ -76,6 +91,7 @@ void Application::Display(void)
 	{
 		m_pMeshMngr->AddSphereToRenderList(glm::translate(m_stopsList[i]) * glm::scale(vector3(0.05f)), C_GREEN, RENDER_WIRE);
 	}
+	
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
