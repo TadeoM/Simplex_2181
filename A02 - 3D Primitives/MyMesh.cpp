@@ -513,7 +513,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 			int nextI = (i + 1) % a_nSubdivisionsA;
 			int nextJ = (j + 1) % a_nSubdivisionsB;
 
-			AddQuad(tubeyBoys[i][j], tubeyBoys[nextI][j], tubeyBoys[i][nextJ], tubeyBoys[nextI][nextJ]);
+			AddQuad(locations[i][j], locations[nextI][j], locations[i][nextJ], locations[nextI][nextJ]);
 		}
 	}
 
