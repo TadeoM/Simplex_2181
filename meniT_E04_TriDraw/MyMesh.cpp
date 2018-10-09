@@ -22,6 +22,9 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	vector3 leftPoint;
 	vector3 rightPoint = vector3(a_fRadius * (1 / 180.0f), 0, 0);
 	vector3 centerPoint = vector3(0, 0, 0);
+
+	std::vector<vector3> locations;
+
 	// set the degree at which each triangle will be made
 	double degreeInterval = 360.0f / a_nSubdivisions;
 
@@ -36,9 +39,10 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
 		leftPoint = rightPoint;
 		rightPoint = vector3( a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)),0);
-		std::cout << rightPoint.x << " " << rightPoint.y << " " << std::endl;
+		locations.push_back(rightPoint);
+		std::cout << "X: " << locations[i].x << " Y: " << locations[i].y << " Z: " << locations[i].z << std::endl;
 
-		AddTri(centerPoint, leftPoint, rightPoint);
+		AddTri(centerPoint, leftPoint, locations[i]);
 	};
 
 	// Adding information about color

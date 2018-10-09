@@ -79,8 +79,7 @@ void Application::Display(void)
 	}
 
 
-	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, glm::radians(fCurrent), AXIS_Z);
-	matrix4 m4Model = glm::translate(m4Rotation, v3EndPoint);
+	matrix4 m4Model = glm::translate(IDENTITY_M4, v3CurrentPos);
 	m_pModel->SetModelMatrix(m4Model);
 
 	m_pMeshMngr->Print("\nTimer: ");//Add a line on top
