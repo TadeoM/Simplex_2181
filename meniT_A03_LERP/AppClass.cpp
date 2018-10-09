@@ -22,7 +22,6 @@ void Application::InitVariables(void)
 	if(m_uOrbits < 1)
 		m_uOrbits = 7;
 
-	m_uOrbits = 5;
 	float fSize = 1.0f; //initial size of orbits
 
 	//creating a color using the spectrum 
@@ -40,6 +39,7 @@ void Application::InitVariables(void)
 
 		std::vector<vector3> circle;
 		
+		// initialize points
 		vector3 leftPoint;
 		vector3 rightPoint = vector3(fSize * (1 / 180.0f), 0, 0);
 		vector3 centerPoint = vector3(0, 0, 0);
@@ -47,10 +47,12 @@ void Application::InitVariables(void)
 
 		for (int j = 0; j < i; j++)
 		{
+			// get next degree on circle and set the points of the triable
 			float nextDegree = degreeInterval * j;
 			leftPoint = rightPoint;
 			rightPoint = vector3(fSize * (std::cos((nextDegree * 3.1415f) / 180.0f)), fSize * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0);
 
+			// push the right point to the circle List
 			circle.push_back(rightPoint);
 		}
 		circlesList.push_back(circle);
@@ -58,14 +60,6 @@ void Application::InitVariables(void)
 
 		fSize += 0.5f; //increment the size for the next orbit
 		uColor -= static_cast<uint>(decrements); //decrease the wavelength
-	}
-
-	for each(std::vector<vector3> circle in circlesList)
-	{
-		for each(vector3 location in circle)
-		{
-			std::cout << "X: " << location.x << " Y: " << location.y << "Z: " << location.z << "\n\n";
-		}
 	}
 }
 void Application::Update(void)
@@ -97,14 +91,17 @@ void Application::Display(void)
 	{
 		m_pMeshMngr->AddMeshToRenderList(m_shapeList[i], glm::rotate(m4Offset, 1.5708f, AXIS_X));
 
+		// set delta time
 		static DWORD DStartingTime = GetTickCount();
 		DWORD DCurrentTime = GetTickCount();
 		DWORD DDelta = DCurrentTime - DStartingTime;
 		float fTimer = static_cast<float>(DDelta / 1000.0f);
 
+		// get the current startPos and current EndPos
 		vector3 v3StartPos = circlesList[i][stepList[i]];
 		vector3 v3EndPos = circlesList[i][(stepList[i] + 1) % circlesList[i].size()];
 
+		// check what percentage its at
 		float fTimeBetweenStops = 1.0f;//in seconds
 		float fPercentage = MapValue(fTimer, 0.0f, fTimeBetweenStops, 0.0f, 1.0f);
 

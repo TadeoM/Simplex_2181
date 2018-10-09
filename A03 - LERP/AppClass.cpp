@@ -22,7 +22,7 @@ void Application::InitVariables(void)
 	if(m_uOrbits < 1)
 		m_uOrbits = 7;
 
-	m_uOrbits = 5;
+	//m_uOrbits = 5;
 	float fSize = 1.0f; //initial size of orbits
 
 	//creating a color using the spectrum 
