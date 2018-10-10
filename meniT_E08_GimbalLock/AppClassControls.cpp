@@ -359,6 +359,7 @@ void Application::CameraRotation(float a_fSpeed)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
+
 	}
 	else if (MouseX > CenterX)
 	{
@@ -415,11 +416,13 @@ void Application::ProcessKeyboard(void)
 		m_pCameraMngr->MoveVertical(fSpeed);
 #pragma endregion
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
-	{
+	{		
 		if (fMultiplier)
 			m_v3Rotation.x -= 1.0f;
 		else
 			m_v3Rotation.x += 1.0f;
+
+		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(1.0f), vector3(1.0f, 0.0f, 0.0f));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 	{
@@ -427,6 +430,8 @@ void Application::ProcessKeyboard(void)
 			m_v3Rotation.y -= 1.0f;
 		else
 			m_v3Rotation.y += 1.0f;
+
+		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(1.0f), vector3(0.0f, 1.0f, 0.0f));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
@@ -434,10 +439,12 @@ void Application::ProcessKeyboard(void)
 			m_v3Rotation.z -= 1.0f;
 		else
 			m_v3Rotation.z += 1.0f;
+
+		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(1.0f), vector3(0.0f, 0.0f, 1.0f));
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
-		m_v3Rotation = vector3(0.0f);
+		m_qOrientation = m_qOrientation * vector3(0.0f);
 	}
 }
 //Joystick

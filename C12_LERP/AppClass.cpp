@@ -77,6 +77,11 @@ void Application::Display(void)
 	vector3 v3CurrentPos = glm::lerp(v3Start, v3End, fPercentage);
 	matrix4 m4Model = glm::translate(IDENTITY_M4, v3CurrentPos);
 
+	X : 1 Y : 0Z : 0
+
+	X : -0.499947 Y : 0.866056Z : 0
+
+	X : -0.500107 Y : -0.865964Z : 0
 	//if we are done with this route
 	if (fPercentage >= 1.0f)
 	{
