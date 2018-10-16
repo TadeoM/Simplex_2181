@@ -10,6 +10,9 @@ void Application::InitVariables(void)
 
 	//Load a model
 	m_pModel->Load("Minecraft\\Steve.obj");
+
+	m_pMesh = new MyMesh();
+	//m_pMesh->GenerateCube(2.0f, C_RED);
 }
 void Application::Update(void)
 {
@@ -32,9 +35,10 @@ void Application::Update(void)
 	{
 		quaternion q1;
 		quaternion q2 = glm::angleAxis(glm::radians(359.9f), vector3(0.0f, 0.0f, 1.0f));
-		float fPercentage = MapValue(fTimer, 0.0f, 5.0f, 0.0f, 1.0f);
+		float fPercentage = MapValue(fTimer, 0.0f, 2.0f, 0.0f, 1.0f);
 		quaternion qSLERP = glm::mix(q1, q2, fPercentage);
 		m_m4Steve = glm::toMat4(qSLERP);
+
 	}
 #pragma endregion
 #pragma region translate vector orientation into a matrix
@@ -60,24 +64,39 @@ void Application::Update(void)
 
 	//Send the model to render list
 	m_pModel->AddToRenderList();
+
+	
 }
 void Application::Display(void)
 {
 	// Clear the screen
 	ClearScreen();
-	
-	// draw a skybox
-	m_pMeshMngr->AddSkyboxToRenderList();
-
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
+	matrix4 m4Model = glm::translate(m_v3Orientation);
 
-	float fovy = 45.0f; // field of view
-	float aspect = m_pSystem->GetWindowWidth() / m_pSystem->GetWindowHeight(); // aspect ratio
-	float zNear = 0.0001f;  // bear clipping plane
-	float zFar = 10000.0f; // far clipping plane
+	//m4Projection = glm::ortho(-0.0f, 2.0f, -0.0f, 2.0f, 0.01f, 15.0f);
+	float fFOV = 90.0f;
+	float fAspect = static_cast<float>(m_pSystem->GetWindowWidth()) / static_cast<float>(m_pSystem->GetWindowHeight());
+	float fNear = 0.01f;
+	float fFar = 20.0f;
+	m4Projection = glm::perspective(fFOV, fAspect, fNear, fFar);
 
-	m4Projection = glm::perspective(fovy, aspect, zNear, zFar);
+	vector3 v3Position; vector3(0.0f, 0.0f, 10.0f);
+	vector3 v3Target;
+	vector3 v3Up = vector3(0.0f, 1.0f, 0.0f); 
+
+	m4View = glm::lookAt(v3Position, v3Target, v3Up);
+
+	// draw a skybox
+	m_pMeshMngr->AddSkyboxToRenderList();	
+	
+	//float fovy = 45.0f; // field of view
+	//float aspect = m_pSystem->GetWindowWidth() / m_pSystem->GetWindowHeight(); // aspect ratio
+	//float zNear = 0.0001f;  // bear clipping plane
+	//float zFar = 10000.0f; // far clipping plane
+
+	//m4Projection = glm::perspective(fovy, aspect, zNear, zFar);
 
 	m_pCameraMngr->SetProjectionMatrix(m4Projection);
 	m_pCameraMngr->SetViewMatrix(m4View);
@@ -90,6 +109,8 @@ void Application::Display(void)
 	
 	//draw gui
 	DrawGUI();
+
+	m_pMesh->Render(m4Projection, m4View, m4Model);
 	
 	//end the current frame (internally swaps the front and back buffers)
 	m_pWindow->display();
@@ -98,6 +119,8 @@ void Application::Release(void)
 {
 	//release model
 	SafeDelete(m_pModel);
+
+	SafeDelete(m_pMesh);
 
 	//release GUI
 	ShutdownGUI();
