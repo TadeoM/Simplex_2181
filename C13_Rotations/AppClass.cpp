@@ -38,12 +38,12 @@ void Application::Display(void)
 	for (uint i = 0; i < 2500; ++i)
 		m4Model = m4Rotation * glm::translate(IDENTITY_M4, vector3(2.5f, 0.0f, 0.0f)) * glm::transpose(m4Rotation);
 	
-	/*
+	
 	//extra part, how to rotate around a point (in this case the base of the cone)
-	matrix4 m4Translation = glm::translate(IDENTITY_M4, vector3(0.0f, 0.5f, 0.0f));
-	matrix4 m4TransInverse = glm::translate(IDENTITY_M4, vector3(0.0f, -0.5f, 0.0f));
+	matrix4 m4Translation = glm::translate(IDENTITY_M4, vector3(0.0f, 10.0f, 0.0f));
+	matrix4 m4TransInverse = glm::translate(IDENTITY_M4, vector3(0.0f, -10.5f, 0.0f));
 	m4Model = m4TransInverse * m4Rotation * m4Translation;
-	*/
+
 
 	// render the object
 	m_pMesh->Render(m4Projection, m4View, m4Model);

@@ -183,6 +183,12 @@ void MyMesh::AddQuadColor(vector3 a_v3Color)
 	AddVertexColor(a_v3Color);
 	AddVertexColor(a_v3Color);
 }
+void MyMesh::AddTriColor(vector3 a_v3Color)
+{
+	AddVertexColor(a_v3Color);
+	AddVertexColor(a_v3Color);
+	AddVertexColor(a_v3Color);
+}
 void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 {
 	if (a_fSize < 0.01f)
@@ -225,7 +231,7 @@ void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 	AddTri(point7, point6, point5);
 	AddTri(point7, point5, point4);
 	AddQuadColor(C_ORANGE);
-
+	// 5/6, 6, 7, 6, 6, 5, 
 	//L
 	AddTri(point7, point4, point0);
 	AddTri(point3, point7, point0);
@@ -320,6 +326,8 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 		AddTri(topCenterPoint, rightPoint, leftPoint);
 	};
 
+	GenerateCylinder(a_fRadius, a_fHeight, a_nSubdivisions, a_v3Color);
+
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
@@ -363,7 +371,11 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 		topRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0.5f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
 
 		if (i != 0)
+		{
 			AddQuad(baseLeftPoint, baseRightPoint, topLeftPoint, topRightPoint);
+			AddQuadColor(C_YELLOW);
+		}
+			
 		AddTri(baseCenterPoint, baseRightPoint, baseLeftPoint);
 		AddTri(topCenterPoint, topLeftPoint, topRightPoint);
 	};
@@ -395,6 +407,17 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	GenerateCube(a_fOuterRadius, a_v3Color);
 }
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
+{
+	if (a_fRadius < 0.01f)
+		a_fRadius = 0.01f;
+
+	Release();
+	Init();
+
+	//Solution replaced by generate Cube
+	GenerateCube(a_fRadius, a_v3Color);
+}
+void MyMesh::GeneratePencil(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color )
 {
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;

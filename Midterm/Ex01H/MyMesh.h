@@ -137,6 +137,7 @@ public:
 	OUTPUT: ---
 	*/
 	void AddQuadColor(vector3 a_v3Color);
+	void AddTriColor(vector3 a_v3Color);
 #pragma region 3D Primitives
 	/*
 	USAGE: Generates a cube
@@ -202,6 +203,16 @@ public:
 	-	float a_fRadius -> radius of the sphere
 	-	int a_nSubdivisions -> Number of divisions, not a lot of difference in shapes larger than 3 subd
 	-	a_v3Color -> Color of the mesh
+	OUTPUT: ---
+	*/
+	void GeneratePencil(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);
+	/*
+	USAGE: Generates a Pencil mesh
+	ARGUMENTS:
+	-	float a_fRadius -> radius
+	-	float a_fHeight -> how tall is the mesh
+	-	int a_nSubdivisions -> divisions on the cap
+	-	vector3 a_v3Color -> Color of the mesh
 	OUTPUT: ---
 	*/
 	void GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);

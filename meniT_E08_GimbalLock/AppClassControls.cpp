@@ -48,6 +48,18 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 		gui.m_bMousePressed[2] = false;
 		m_bFPC = false;
 		break;
+	case sf::Keyboard::O:
+		//Preventing from negative time between stops
+		m_fTimeBetweenStops -= 0.5f;
+		if (m_fTimeBetweenStops <= 0.5f)
+		{
+			m_fTimeBetweenStops = 0.5f;
+		}
+
+		break;
+	case sf::Keyboard::P:
+		m_fTimeBetweenStops += 0.5f;
+		break;
 	}
 
 	for (int i = 0; i < 3; i++)

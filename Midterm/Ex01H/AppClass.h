@@ -22,6 +22,8 @@ class Application
 	MyMesh* m_pMesh; //Mesh to generate
 	std::vector<MyMesh*> m_pPencil;
 	String m_sProgramer = "DEFAULT"; //Name of programmer
+	std::vector<vector3> m_stopsList;
+	quaternion m_qOrientation;
 
 private:
 	static ImGuiObject gui; //GUI object

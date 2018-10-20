@@ -111,6 +111,17 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		bFPSControl = !bFPSControl;
 		m_pCameraMngr->SetFPS(bFPSControl);
 		break;
+	case sf::Keyboard::O:
+		//Preventing from negative time between stops
+		m_fTimeBetweenStops -= 0.5f;
+		if (m_fTimeBetweenStops <= 0.5f)
+		{
+			m_fTimeBetweenStops = 0.5f;
+		}
+		break;
+	case sf::Keyboard::P:
+		m_fTimeBetweenStops += 0.5f;
+		break;
 	case sf::Keyboard::Add:
 		++m_uActCont;
 		m_uActCont %= 8;
