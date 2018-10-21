@@ -304,10 +304,10 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	vector3 leftPoint;
-	vector3 rightPoint = vector3(a_fRadius * (1 / 180.0f), 0, 0);
-	vector3 baseCenterPoint = vector3(0, -0.5f * a_fHeight, 0);
-	vector3 topCenterPoint = vector3(0, 0.5f * a_fHeight, 0);
+	vector3 co_leftPoint;
+	vector3 co_rightPoint = vector3(a_fRadius * (1 / 180.0f), 0, 0);
+	vector3 co_baseCenterPoint = vector3(0, 0.5f * a_fHeight, 0);
+	vector3 co_topCenterPoint = vector3(0,0.0f, 0);
 	// set the degree at which each triangle will be made
 	double degreeInterval = 360.0f / a_nSubdivisions;
 
@@ -319,14 +319,117 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 		// to get radians divide by 180 multiply by pi
 		// we already know 2 points on the triangle, it is calculated by the previous triangle
 		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
-		leftPoint = rightPoint;
-		rightPoint = vector3(a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), -0.5f * a_fHeight, a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)));
+		co_leftPoint = co_rightPoint;
+		co_rightPoint = vector3(a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)), 0.5f * a_fHeight, a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)));
 
-		AddTri(baseCenterPoint, leftPoint, rightPoint);
-		AddTri(topCenterPoint, rightPoint, leftPoint);
+		AddTri(co_baseCenterPoint, co_rightPoint, co_leftPoint);
+		AddTriColor(a_v3Color);
+		AddTri(co_topCenterPoint, co_leftPoint, co_rightPoint);
+		AddTriColor(a_v3Color);
 	};
 
-	GenerateCylinder(a_fRadius, a_fHeight, a_nSubdivisions, a_v3Color);
+	vector3 cy_baseLeftPoint;
+	vector3 cy_baseRightPoint = vector3(a_fRadius * (1 / 180.0f), 0.5f * a_fHeight, a_fRadius);
+	vector3 cy_topLeftPoint;
+	vector3 cy_topRightPoint = vector3(a_fRadius * (1 / 180.0f), 2.0f * a_fHeight, a_fRadius);
+	vector3 cy_baseCenterPoint = vector3(0, 0.5f * a_fHeight, 0);
+	vector3 cy_topCenterPoint = vector3(0, 2.0f * a_fHeight, 0);
+	// set the degree at which each triangle will be made
+	std::cout << "DRAWING CIRCLE" << std::endl;
+
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// find the next place that you will draw the following triangle
+		float nextDegree = degreeInterval * i;
+		// x = cos(degree) y = sin(degree)
+		// to get radians divide by 180 multiply by pi
+		// we already know 2 points on the triangle, it is calculated by the previous triangle
+		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
+		cy_baseLeftPoint = cy_baseRightPoint;
+		cy_topLeftPoint = cy_topRightPoint;
+		cy_baseRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0.5f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+		cy_topRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 2.0f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+
+		if (i != 0)
+		{
+			AddQuad(cy_baseLeftPoint, cy_baseRightPoint, cy_topLeftPoint, cy_topRightPoint);
+			AddQuadColor(C_YELLOW);
+		}
+
+		AddTri(cy_baseCenterPoint, cy_baseRightPoint, cy_baseLeftPoint);
+		AddTriColor(C_YELLOW);
+
+		AddTri(cy_topCenterPoint, cy_topLeftPoint, cy_topRightPoint);
+		AddTriColor(C_YELLOW);
+	};
+
+	cy_baseLeftPoint;
+	cy_baseRightPoint = vector3((a_fRadius * 1.1f) * (1 / 180.0f), 2.0f * a_fHeight, (a_fRadius * 1.1f));
+	cy_topLeftPoint;
+	cy_topRightPoint = vector3((a_fRadius * 1.1f) * (1 / 180.0f), 2.2f * a_fHeight, (a_fRadius * 1.1f) );
+	cy_baseCenterPoint = vector3(0, 2.0f * a_fHeight, 0);
+	cy_topCenterPoint = vector3(0, 2.2f * a_fHeight, 0);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// find the next place that you will draw the following triangle
+		float nextDegree = degreeInterval * i;
+		// x = cos(degree) y = sin(degree)
+		// to get radians divide by 180 multiply by pi
+		// we already know 2 points on the triangle, it is calculated by the previous triangle
+		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
+		cy_baseLeftPoint = cy_baseRightPoint;
+		cy_topLeftPoint = cy_topRightPoint;
+		cy_baseRightPoint = vector3((a_fRadius * 1.1f) * (std::sin((nextDegree * 3.1415f) / 180.0f)), 2.0f * a_fHeight, (a_fRadius * 1.1f) * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+		cy_topRightPoint = vector3((a_fRadius * 1.1f) * (std::sin((nextDegree * 3.1415f) / 180.0f)), 2.2f * a_fHeight, (a_fRadius * 1.1f) * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+
+		if (i != 0)
+		{
+			AddQuad(cy_baseLeftPoint, cy_baseRightPoint, cy_topLeftPoint, cy_topRightPoint);
+			AddQuadColor(C_GRAY);
+		}
+
+		AddTri(cy_baseCenterPoint, cy_baseRightPoint, cy_baseLeftPoint);
+		AddTriColor(C_GRAY);
+
+		AddTri(cy_topCenterPoint, cy_topLeftPoint, cy_topRightPoint);
+		AddTriColor(C_GRAY);
+	};
+
+	cy_baseLeftPoint;
+	cy_baseRightPoint = vector3(a_fRadius * (1 / 180.0f), 2.2f * a_fHeight, a_fRadius);
+	cy_topLeftPoint;
+	cy_topRightPoint = vector3(a_fRadius * (1 / 180.0f), 2.5f * a_fHeight, a_fRadius);
+	cy_baseCenterPoint = vector3(0, 2.2f * a_fHeight, 0);
+	cy_topCenterPoint = vector3(0, 2.5f * a_fHeight, 0);
+	// set the degree at which each triangle will be made
+	std::cout << "DRAWING CIRCLE" << std::endl;
+
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// find the next place that you will draw the following triangle
+		float nextDegree = degreeInterval * i;
+		// x = cos(degree) y = sin(degree)
+		// to get radians divide by 180 multiply by pi
+		// we already know 2 points on the triangle, it is calculated by the previous triangle
+		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
+		cy_baseLeftPoint = cy_baseRightPoint;
+		cy_topLeftPoint = cy_topRightPoint;
+		cy_baseRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 2.2f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+		cy_topRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 2.5f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+
+		if (i != 0)
+		{
+			AddQuad(cy_baseLeftPoint, cy_baseRightPoint, cy_topLeftPoint, cy_topRightPoint);
+			AddQuadColor(C_PURPLE);
+		}
+
+		AddTri(cy_baseCenterPoint, cy_baseRightPoint, cy_baseLeftPoint);
+		AddTriColor(C_PURPLE);
+
+		AddTri(cy_topCenterPoint, cy_topLeftPoint, cy_topRightPoint);
+		AddTriColor(C_PURPLE);
+	};
+
 
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -348,11 +451,11 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	vector3 baseLeftPoint;
-	vector3 baseRightPoint = vector3(a_fRadius * (1 / 180.0f), -0.5f * a_fHeight, a_fRadius);
+	vector3 baseRightPoint = vector3(a_fRadius * (1 / 180.0f), 20, a_fRadius);
 	vector3 topLeftPoint;
-	vector3 topRightPoint = vector3(a_fRadius * (1 / 180.0f), 0.5f * a_fHeight, a_fRadius);
-	vector3 baseCenterPoint = vector3(0, -0.5f * a_fHeight, 0);
-	vector3 topCenterPoint = vector3(0, 0.5f * a_fHeight, 0);
+	vector3 topRightPoint = vector3(a_fRadius * (1 / 180.0f), 40, a_fRadius);
+	vector3 baseCenterPoint = vector3(0,  20, 0);
+	vector3 topCenterPoint = vector3(0, 40, 0);
 	// set the degree at which each triangle will be made
 	double degreeInterval = 360.0f / a_nSubdivisions;
 	std::cout << "DRAWING CIRCLE" << std::endl;
@@ -367,8 +470,8 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 		// therefore, we simply set the leftPoint to the triangle we calculated, rightPoint, and then calculate a new rightPoint
 		baseLeftPoint = baseRightPoint;
 		topLeftPoint = topRightPoint;
-		baseRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), -0.5f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
-		topRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 0.5f * a_fHeight, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+		baseRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 20, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
+		topRightPoint = vector3(a_fRadius * (std::sin((nextDegree * 3.1415f) / 180.0f)), 40, a_fRadius * (std::cos((nextDegree * 3.1415f) / 180.0f)));
 
 		if (i != 0)
 		{
@@ -377,11 +480,13 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 		}
 			
 		AddTri(baseCenterPoint, baseRightPoint, baseLeftPoint);
+		AddTriColor(C_YELLOW);
+
 		AddTri(topCenterPoint, topLeftPoint, topRightPoint);
+		AddTriColor(C_YELLOW);
 	};
 
 	// Adding information about color
-	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
 void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
@@ -427,5 +532,7 @@ void MyMesh::GeneratePencil(float a_fRadius, float a_fHeight, int a_nSubdivision
 
 	//Solution replaced by generate Cube
 	GenerateCube(a_fRadius, a_v3Color);
+
+	CompileOpenGL3X();
 }
 std::vector<vector3> MyMesh::GetVertexList(void) { return m_lVertexPos; }

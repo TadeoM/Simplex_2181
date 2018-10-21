@@ -21,21 +21,14 @@ void Application::InitVariables(void)
 
 	//Please change to your name and email
 	m_sProgramer = "Tadeo Menichelli - txm1918@rit.edu";
-
-	MyMesh* m_pHandle = new MyMesh();
-	MyMesh* m_pTip = new MyMesh();
-	m_pHandle->GenerateCylinder(1.0f, 2.0f, 8, vector3(1.0f, 1.0f, 1.0f));
-	m_pTip->GenerateCone(1.0f, 1.0f, 8, vector3(0.0f, 0.0f, 0.0f));
-	m_pPencil.push_back(m_pTip);
-	m_pPencil.push_back(m_pHandle);
-	std::vector<vector3> testPos =  m_pHandle->GetVertexList();
 	
-	m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(-1.0f, 0.0f, 0.0f));
+	m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(1.0f, 0.0f, 0.0f));
 	m_stopsList = m_pGuideCube->GetVertexList();
 	for (int i = 0; i < m_stopsList.size(); i++)
 	{
-		std::cout << "X: " << m_stopsList[i].x << " Y: " << m_stopsList[i].y << " Z: " << m_stopsList[i].z <<std::endl;
+		//std::cout << "X: " << m_stopsList[i].x << " Y: " << m_stopsList[i].y << " Z: " << m_stopsList[i].z <<std::endl;
 	}
+	m_soundBuffer.loadFromFile("pencil.wav");
 }
 void Application::Update(void)
 {
@@ -65,26 +58,25 @@ void Application::Display(void)
 	static int step = 0;
 
 	// get where the tip and hanlde of pencils will start and end at a certain step
-	vector3 v3_TipStartPoint = m_stopsList[step];
-	vector3 v3_TipEndPoint = m_stopsList[(step + 1) % m_stopsList.size()];
-	vector3 v3_HandleStartPoint = m_stopsList[step];
-	vector3 v3_HandleEndPoint = m_stopsList[(step + 1) % m_stopsList.size()];
+	vector3 v3_PencilStartPoint = m_stopsList[step];
+	vector3 v3_PencilEndPoint = m_stopsList[(step + 1) % m_stopsList.size()];
+
 	// gets the percentage between point
 	float fPercentage = MapValue(fTimer, 0.0f, m_fTimeBetweenStops, 0.0f, 1.0f);
 
 	//calculate the current position
-	vector3 v3_TipCurrentPos = glm::lerp(v3_TipStartPoint, v3_TipEndPoint, fPercentage);
+	vector3 v3_PencilCurrentPos = glm::lerp(v3_PencilStartPoint, v3_PencilEndPoint, fPercentage);
 	
 	//calculate the current position
-	matrix4 m4Translation = glm::translate(IDENTITY_M4, v3_TipCurrentPos);
-	matrix4 m4Tip = m4Translation;
+	matrix4 m4Translation = glm::translate(IDENTITY_M4, v3_PencilCurrentPos);
+	matrix4 m4Pencil = m4Translation;
 
 	static int x = 1;
 	static bool rotated = false;
 	if (x == 6 && rotated == false)
 	{
 		rotated = true;
-		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, 1.0f));
+		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, -1.0f));
 	}
 	else if (x == 12 && rotated == false)
 	{
@@ -94,7 +86,7 @@ void Application::Display(void)
 	else if (x == 19 && rotated == false)
 	{
 		rotated = true;
-		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, 1.0f));
+		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, -1.0f));
 	}
 	else if (x == 25 && rotated == false)
 	{
@@ -104,7 +96,7 @@ void Application::Display(void)
 	else if (x == 31 && rotated == false)
 	{
 		rotated = true;
-		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, 1.0f));
+		m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(90.0f), vector3(0.0f, 0.0f, -1.0f));
 	}
 	else if (x == 36 && rotated == false)
 	{
@@ -114,7 +106,7 @@ void Application::Display(void)
 	}
 
 	
-	m4Tip *= ToMatrix4(m_qOrientation);
+	m4Pencil *= ToMatrix4(m_qOrientation);
 	static int timesRotated = 0;
 
 	if (fPercentage >= 1.0f)
@@ -125,9 +117,7 @@ void Application::Display(void)
 		fTimer = m_pSystem->GetDeltaTime(uClock);//restart the clock
 		step %= m_stopsList.size();//make sure we are within boundries
 	}
-	//matrix4 m4Handle = glm::translate(IDENTITY_M4, v3HandlePos);
-	m_pPencil[0]->Render(m4Projection, m4View, m4Tip);
-	//m_pPencil[1]->Render(m4Projection, m4View, m4Handle);
+	m_pMesh->Render(m4Projection, m4View, m4Pencil);
 
 #pragma region DOES NOT NEED CHANGES
 	/*
@@ -135,7 +125,7 @@ void Application::Display(void)
 		skybox as a frame of reference and the gui display
 	*/
 	//Render the guide cube
-	//m_pGuideCube->Render(m4Projection, m4View, ToMatrix4(m_qArcBall)); 
+	m_pGuideCube->Render(m4Projection, m4View, ToMatrix4(m_qArcBall)); 
 
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
