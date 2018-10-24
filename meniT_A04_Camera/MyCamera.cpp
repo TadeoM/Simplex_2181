@@ -153,9 +153,9 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 void MyCamera::MoveForward(float a_fDistance)
 {
 	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += -a_fDistance * v3Forward;
-	m_v3Target += -a_fDistance * v3Forward;
-	m_v3Above += -a_fDistance * v3Forward;
+	m_v3Position += -a_fDistance * m_v3Forward;
+	m_v3Target += -a_fDistance * m_v3Forward;
+	m_v3Above += -a_fDistance * m_v3Forward;
 }
 
 void MyCamera::MoveVertical(float a_fDistance)
@@ -163,27 +163,29 @@ void MyCamera::MoveVertical(float a_fDistance)
 	// rotates the camera a certain distance
 	// normalizes the rotation to make sure the camera does not rotate too far
 	// makes changes where the forward and left vectors are so that we move correctly
-	quaternion m_qAngleRotate = glm::angleAxis(glm::radians(a_fDistance), vector3(1, 0, 0));
-	m_v3Target = (m_qAngleRotate * m_v3Target) + m_v3Position;
-	v3Forward = glm::normalize(m_v3Position - m_v3Target);
-	v3Left = vector3(v3Forward.z, 0, -v3Forward.x);
+	quaternion m_qAngleRotate = glm::angleAxis(glm::radians(a_fDistance), -m_v3Left);
+	m_v3Target = (m_qAngleRotate * (m_v3Target - m_v3Position)) + m_v3Position;
+	m_v3Above = (m_qAngleRotate * (m_v3Above - m_v3Position)) + m_v3Position;
+	m_v3Forward = glm::normalize(m_v3Position - m_v3Target);
+	m_v3Left = glm::cross(m_v3Above - m_v3Position, m_v3Forward);
 }
 void MyCamera::MoveHorizontal(float a_fDistance)
 {
 	// rotates the camera a certain distance
 	// normalizes the rotation to make sure the camera does not rotate too far
 	// makes changes where the forward and left vectors are so that we move correctly
-	quaternion m_qAngleRotate = glm::angleAxis(glm::radians(a_fDistance), vector3(0, 1, 0));
-	m_v3Target = (m_qAngleRotate * m_v3Target) + m_v3Position;
-	v3Forward = glm::normalize(m_v3Position - m_v3Target);
-	v3Left = vector3(v3Forward.z, 0, -v3Forward.x);
+	quaternion m_qAngleRotate = glm::angleAxis(glm::radians(a_fDistance), m_v3Above - m_v3Position);
+	m_v3Target = (m_qAngleRotate * (m_v3Target - m_v3Position)) + m_v3Position;
+	m_v3Above = (m_qAngleRotate * (m_v3Above - m_v3Position)) + m_v3Position;
+	m_v3Forward = glm::normalize(m_v3Position - m_v3Target);
+	m_v3Left = glm::cross(m_v3Above - m_v3Position, m_v3Forward);
 }
 
 void MyCamera::MoveSideways(float a_fDistance)
 {
-	m_v3Position += -a_fDistance * v3Left;
-	m_v3Target += -a_fDistance * v3Left;
-	m_v3Above += -a_fDistance * v3Left;
+	m_v3Position += a_fDistance * m_v3Left;
+	m_v3Target += a_fDistance * m_v3Left;
+	m_v3Above += a_fDistance * m_v3Left;
 }
 
 void MyCamera::RotateCamera(float rotation)

@@ -351,19 +351,6 @@ void Application::CameraRotation(float a_fSpeed)
 	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
 	a_fSpeed *= 3;
-	if (MouseX < CenterX)
-	{
-		fDeltaMouse = static_cast<float>(CenterX - MouseX);
-		fAngleY += fDeltaMouse * a_fSpeed;
-		m_pCamera->MoveHorizontal(fAngleY);
-	}
-	else if (MouseX > CenterX)
-	{
-		fDeltaMouse = static_cast<float>(MouseX - CenterX);
-		fAngleY -= fDeltaMouse * a_fSpeed;
-		m_pCamera->MoveHorizontal(fAngleY);
-	}
-
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
@@ -376,11 +363,19 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 		m_pCamera->MoveVertical(fAngleX);
 	}
-	quaternion m_qOrientationX = m_qOrientationX * glm::angleAxis(glm::radians(fAngleX), vector3(1.0f, 0.0f, 0.0f));
-	quaternion m_qOrientationY = m_qOrientationY * glm::angleAxis(glm::radians(fAngleY), vector3(0.0f, 1.0f, 0.0f));
-	matrix4 m4Rotation = ToMatrix4(m_qOrientationX);
-	m4Rotation += ToMatrix4(m_qOrientationY);
 
+	if (MouseX < CenterX)
+	{
+		fDeltaMouse = static_cast<float>(CenterX - MouseX);
+		fAngleY += fDeltaMouse * a_fSpeed;
+		m_pCamera->MoveHorizontal(fAngleY);
+	}
+	else if (MouseX > CenterX)
+	{
+		fDeltaMouse = static_cast<float>(MouseX - CenterX);
+		fAngleY -= fDeltaMouse * a_fSpeed;
+		m_pCamera->MoveHorizontal(fAngleY);
+	}
 
 	//Change the Yaw and the Pitch of the camera
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
