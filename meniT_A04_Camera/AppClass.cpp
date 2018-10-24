@@ -48,6 +48,8 @@ void Application::Display(void)
 	//clear the render list
 	m_pMeshMngr->ClearRenderList();
 
+	//m_pCamera->CalculateProjectionMatrix();
+
 	//Render the list of MyMeshManager
 	m_pMyMeshMngr->Render();
 	

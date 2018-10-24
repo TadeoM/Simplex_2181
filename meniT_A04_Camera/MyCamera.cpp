@@ -153,20 +153,43 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 void MyCamera::MoveForward(float a_fDistance)
 {
 	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Position += -a_fDistance * v3Forward;
+	m_v3Target += -a_fDistance * v3Forward;
+	m_v3Above += -a_fDistance * v3Forward;
 }
 
 void MyCamera::MoveVertical(float a_fDistance)
 {
-	m_v3Position += vector3(0.0f, a_fDistance, 0.0f);
-	m_v3Target += vector3(0.0f, a_fDistance, 0.0f);
-	m_v3Above += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Target += vector3(0.0f, -a_fDistance, 0.0f);
+	m_v3Target = glm::normalize(m_v3Target) * glm::clamp(glm::distance(vector3(0.0f, 0.0f, 0.0f), m_v3Target), -20.0f, 20.0f);
+	v3Forward = glm::normalize(m_v3Position - m_v3Target);
+	v3Forward.y = 0;
+	v3Left = vector3(v3Forward.z, 0, -v3Forward.x);
 }
+void MyCamera::MoveHorizontal(float a_fDistance)
+{
+	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
+	if (m_v3Target.x >= 17.5)
+	{
+
+	}
+	m_v3Target = glm::normalize(m_v3Target) * glm::clamp(glm::distance(vector3(0.0f, 0.0f, 0.0f), m_v3Target), -20.0f, 20.0f);
+	std::cout << m_v3Target.x << std::endl;
+	v3Forward = glm::normalize(m_v3Position - m_v3Target);
+	v3Forward.y = 0;
+	v3Left = vector3(v3Forward.z, 0, -v3Forward.x);
+}
+
 void MyCamera::MoveSideways(float a_fDistance)
 {
-	m_v3Position += vector3(a_fDistance, 0.0f, 0.0f);
-	m_v3Target += vector3(a_fDistance, 0.0f, 0.0f);
-	m_v3Above += vector3(a_fDistance, 0.0f, 0.0f);
+	m_v3Position += -a_fDistance * v3Left;
+	m_v3Target += -a_fDistance * v3Left;
+	m_v3Above += -a_fDistance * v3Left;
 }
+
+void MyCamera::RotateCamera(float rotation)
+{
+	//m_v3Position += vector3(0.0f,0.0f,300.0f);
+	m_v3Above += vector3(0.0f, 0.0f, 0.0f);
+}
+

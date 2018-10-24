@@ -172,7 +172,7 @@ private:
 	ARGUMENTS: float a_fSensitivity = 0.1f -> indicates how fast the arcball is going to change
 	OUTPUT: ---
 	*/
-	void ArcBall(float a_fSensitivity = 0.1f);
+	quaternion ArcBall(float a_fSensitivity = 0.1f);
 	/*
 	USAGE: Manages the rotation of the camera a_fSpeed is a factor of change
 	ARGUMENTS: float a_fSpeed = 0.005f

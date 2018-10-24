@@ -88,6 +88,9 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 	case sf::Keyboard::Escape:
 		m_bRunning = false;
 		break;
+	case sf::Keyboard::F:
+		m_pCamera->RotateCamera(10.0f);
+		break;
 	case sf::Keyboard::F1:
 		m_pCamera->SetPerspective();
 		m_pCamera->CalculateProjectionMatrix();
@@ -278,11 +281,11 @@ Continuous update (once per frame) for discreet input use
 process events.
 */
 //Mouse
-void Application::ArcBall(float a_fSensitivity)
+quaternion Application::ArcBall(float a_fSensitivity)
 {
 	//If the arcball is not enabled return
 	if (!m_bArcBall)
-		return;
+		return m_qArcBall;
 
 	//static quaternion qArcBall;
 	UINT	MouseX, MouseY;		// Coordinates for the mouse
@@ -323,7 +326,7 @@ void Application::ArcBall(float a_fSensitivity)
 	}
 
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
-								   //return qArcBall; // return the new quaternion orientation
+	return m_qArcBall; // return the new quaternion orientation
 }
 void Application::CameraRotation(float a_fSpeed)
 {
@@ -351,23 +354,33 @@ void Application::CameraRotation(float a_fSpeed)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
+		m_pCamera->MoveHorizontal(fAngleY);
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
+		m_pCamera->MoveHorizontal(fAngleY);
 	}
 
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
 		fAngleX -= fDeltaMouse * a_fSpeed;
+		m_pCamera->MoveVertical(fAngleX);
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
+		m_pCamera->MoveVertical(fAngleX);
 	}
+	quaternion m_qOrientationX = m_qOrientationX * glm::angleAxis(glm::radians(fAngleX), vector3(1.0f, 0.0f, 0.0f));
+	quaternion m_qOrientationY = m_qOrientationY * glm::angleAxis(glm::radians(fAngleY), vector3(0.0f, 1.0f, 0.0f));
+	matrix4 m4Rotation = ToMatrix4(m_qOrientationX);
+	m4Rotation += ToMatrix4(m_qOrientationY);
+
+
 	//Change the Yaw and the Pitch of the camera
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
