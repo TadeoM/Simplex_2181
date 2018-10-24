@@ -350,6 +350,7 @@ void Application::CameraRotation(float a_fSpeed)
 	float fAngleX = 0.0f;
 	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
+	a_fSpeed *= 3;
 	if (MouseX < CenterX)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);

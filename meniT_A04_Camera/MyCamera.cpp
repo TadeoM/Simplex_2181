@@ -160,23 +160,22 @@ void MyCamera::MoveForward(float a_fDistance)
 
 void MyCamera::MoveVertical(float a_fDistance)
 {
-	m_v3Target += vector3(0.0f, -a_fDistance, 0.0f);
-	m_v3Target = glm::normalize(m_v3Target) * glm::clamp(glm::distance(vector3(0.0f, 0.0f, 0.0f), m_v3Target), -20.0f, 20.0f);
+	// rotates the camera a certain distance
+	// normalizes the rotation to make sure the camera does not rotate too far
+	// makes changes where the forward and left vectors are so that we move correctly
+	quaternion m_qAngleRotate = glm::angleAxis(glm::radians(a_fDistance), vector3(1, 0, 0));
+	m_v3Target = (m_qAngleRotate * m_v3Target) + m_v3Position;
 	v3Forward = glm::normalize(m_v3Position - m_v3Target);
-	v3Forward.y = 0;
 	v3Left = vector3(v3Forward.z, 0, -v3Forward.x);
 }
 void MyCamera::MoveHorizontal(float a_fDistance)
 {
-	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
-	if (m_v3Target.x >= 17.5)
-	{
-
-	}
-	m_v3Target = glm::normalize(m_v3Target) * glm::clamp(glm::distance(vector3(0.0f, 0.0f, 0.0f), m_v3Target), -20.0f, 20.0f);
-	std::cout << m_v3Target.x << std::endl;
+	// rotates the camera a certain distance
+	// normalizes the rotation to make sure the camera does not rotate too far
+	// makes changes where the forward and left vectors are so that we move correctly
+	quaternion m_qAngleRotate = glm::angleAxis(glm::radians(a_fDistance), vector3(0, 1, 0));
+	m_v3Target = (m_qAngleRotate * m_v3Target) + m_v3Position;
 	v3Forward = glm::normalize(m_v3Position - m_v3Target);
-	v3Forward.y = 0;
 	v3Left = vector3(v3Forward.z, 0, -v3Forward.x);
 }
 
