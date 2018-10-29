@@ -97,14 +97,17 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	v3PointList[6] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
 	v3PointList[7] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
 
+	// convert each point to world points
 	for (int i = 0; i < 8; i++)
 	{
 		v3PointList[i] = vector3(m_m4ToWorld * vector4(v3PointList[i], 1.0f));
 	}
 
+	// set a value to check max and mins with
 	m_v3MaxG = m_v3MinG;
 	m_v3MinG = v3PointList[0];
 
+	// go through each point on rigidbody and check if it is the max/min point
 	for (uint i = 1; i < 8; ++i)
 	{
 		if (m_v3MaxG.x < v3PointList[i].x)
