@@ -1,4 +1,5 @@
 #include "MyRigidBody.h"
+float g_fRadius;
 using namespace Simplex;
 //Accessors
 bool MyRigidBody::GetVisible(void) { return m_bVisible; }
@@ -63,6 +64,48 @@ void MyRigidBody::Release(void)
 MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
 {
 	Init();
+
+	uint points = a_pointList.size();
+
+	if (points == 0)
+		return;
+
+	m_v3MinL = m_v3MaxL = a_pointList[0];
+
+	for (uint i = 1; i < points; i++)
+	{
+		if (m_v3MinL.x > a_pointList[i].x)
+			m_v3MinL.x = a_pointList[i].x;
+		else if (m_v3MaxL.x > a_pointList[i].x)
+			m_v3MaxL.x = a_pointList[i].x;
+
+		if (m_v3MinL.y > a_pointList[i].y)
+			m_v3MinL.y = a_pointList[i].y;
+		else if (m_v3MaxL.y > a_pointList[i].y)
+			m_v3MaxL.y = a_pointList[i].y;
+
+		if (m_v3MinL.z > a_pointList[i].z)
+			m_v3MinL.z = a_pointList[i].z;
+		else if (m_v3MaxL.z > a_pointList[i].z)
+			m_v3MaxL.z = a_pointList[i].z;
+	}
+
+	m_v3Center = (m_v3MaxL + m_v3MinL) / 2.0f;
+	g_fRadius = glm::distance(m_v3Center, m_v3MaxL);
+
+	// gets the radius of the object
+	for (uint i = 0; i < points; i++)
+	{
+		float fDistance = glm::distance(m_v3Center, a_pointList[i]);
+		if (m_fRadius < fDistance)
+			m_fRadius = fDistance;
+	}
+
+	// measures the distance between the max and the min
+	vector3 v3Size;
+	v3Size = m_v3MaxL - m_v3MinL;
+
+	m_v3HalfWidth = v3Size / 2.0;
 }
 MyRigidBody::MyRigidBody(MyRigidBody const& other)
 {
@@ -102,8 +145,13 @@ void MyRigidBody::AddToRenderList(void)
 {
 	if (!m_bVisible)
 		return;
+
+	m_pMeshMngr->AddWireSphereToRenderList(m_m4ToWorld * glm::translate(m_v3Center) * glm::scale(vector3(m_fRadius)) , m_v3Color, RENDER_SOLID);
+	m_pMeshMngr->AddWireCubeToRenderList(m_m4ToWorld * glm::translate(m_v3Center) * glm::scale(m_v3HalfWidth * 2.0), m_v3Color, RENDER_WIRE);
+	m_pMeshMngr->AddWireSphereToRenderList(m_m4ToWorld * glm::translate(m_v3Center) * glm::scale(vector3(g_fRadius)), m_v3Color, RENDER_WIRE);
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
-	return false;
+	//vector3()
+	return (glm::distance(m_v3Center, other->m_v3Center) < m_fRadius + other->m_fRadius);
 }
