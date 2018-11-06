@@ -63,6 +63,7 @@ void Application::ProcessMouseScroll(sf::Event a_event)
 
 	if (fMultiplier)
 		fSpeed *= 2.0f;
+	m_pCameraMngr->MoveForward(-fSpeed);
 }
 //Keyboard
 void Application::ProcessKeyPressed(sf::Event a_event)
@@ -70,7 +71,9 @@ void Application::ProcessKeyPressed(sf::Event a_event)
 	switch (a_event.key.code)
 	{
 	default: break;
-	case sf::Keyboard::Space:
+	case sf::Keyboard::LShift:
+	case sf::Keyboard::RShift:
+		m_bModifier = true;
 		break;
 	}
 	//gui
@@ -88,16 +91,21 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 	case sf::Keyboard::Escape:
 		m_bRunning = false;
 		break;
-	case sf::Keyboard::F:
-		m_pCamera->RotateCamera(10.0f);
-		break;
 	case sf::Keyboard::F1:
-		m_pCamera->SetPerspective();
-		m_pCamera->CalculateProjectionMatrix();
+		m_pCameraMngr->SetCameraMode(CAM_PERSP);
 		break;
 	case sf::Keyboard::F2:
-		m_pCamera->SetPerspective(false);
-		m_pCamera->CalculateProjectionMatrix();
+		m_pCameraMngr->SetCameraMode(CAM_ORTHO_Z);
+		break;
+	case sf::Keyboard::F3:
+		m_pCameraMngr->SetCameraMode(CAM_ORTHO_Y);
+		break;
+	case sf::Keyboard::F4:
+		m_pCameraMngr->SetCameraMode(CAM_ORTHO_X);
+		break;
+	case sf::Keyboard::F:
+		bFPSControl = !bFPSControl;
+		m_pCameraMngr->SetFPS(bFPSControl);
 		break;
 	case sf::Keyboard::Add:
 		++m_uActCont;
@@ -125,6 +133,9 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 			}
 		}
 		break;
+	case sf::Keyboard::LShift:
+	case sf::Keyboard::RShift:
+		m_bModifier = false;
 	}
 
 	//gui
@@ -281,11 +292,11 @@ Continuous update (once per frame) for discreet input use
 process events.
 */
 //Mouse
-quaternion Application::ArcBall(float a_fSensitivity)
+void Application::ArcBall(float a_fSensitivity)
 {
 	//If the arcball is not enabled return
 	if (!m_bArcBall)
-		return m_qArcBall;
+		return;
 
 	//static quaternion qArcBall;
 	UINT	MouseX, MouseY;		// Coordinates for the mouse
@@ -326,7 +337,7 @@ quaternion Application::ArcBall(float a_fSensitivity)
 	}
 
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
-	return m_qArcBall; // return the new quaternion orientation
+								   //return qArcBall; // return the new quaternion orientation
 }
 void Application::CameraRotation(float a_fSpeed)
 {
@@ -350,64 +361,124 @@ void Application::CameraRotation(float a_fSpeed)
 	float fAngleX = 0.0f;
 	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
-	a_fSpeed *= 3;
-	if (MouseY < CenterY)
-	{
-		fDeltaMouse = static_cast<float>(CenterY - MouseY);
-		fAngleX -= fDeltaMouse * a_fSpeed;
-		m_pCamera->MoveVertical(fAngleX);
-	}
-	else if (MouseY > CenterY)
-	{
-		fDeltaMouse = static_cast<float>(MouseY - CenterY);
-		fAngleX += fDeltaMouse * a_fSpeed;
-		m_pCamera->MoveVertical(fAngleX);
-	}
-
 	if (MouseX < CenterX)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
-		m_pCamera->MoveHorizontal(fAngleY);
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
-		m_pCamera->MoveHorizontal(fAngleY);
 	}
 
+	if (MouseY < CenterY)
+	{
+		fDeltaMouse = static_cast<float>(CenterY - MouseY);
+		fAngleX -= fDeltaMouse * a_fSpeed;
+	}
+	else if (MouseY > CenterY)
+	{
+		fDeltaMouse = static_cast<float>(MouseY - CenterY);
+		fAngleX += fDeltaMouse * a_fSpeed;
+	}
 	//Change the Yaw and the Pitch of the camera
+	m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
+	m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
 void Application::ProcessKeyboard(void)
 {
+	if (!m_bFocused)
+		return;
 	/*
 	This is used for things that are continuously happening,
 	for discreet on/off use ProcessKeyboardPressed/Released
 	*/
 #pragma region Camera Position
-	float fSpeed = 0.1f;
-	float fMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
+	bool bMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
 
-	if (fMultiplier)
-		fSpeed *= 5.0f;
+	float fMultiplier = 1.0f;
+
+	if (bMultiplier)
+		fMultiplier = 5.0f;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		m_pCamera->MoveForward(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		m_pCamera->MoveForward(-fSpeed);
+		m_pCameraMngr->MoveForward(m_fMovementSpeed * fMultiplier);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		m_pCameraMngr->MoveForward(-m_fMovementSpeed * fMultiplier);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCameraMngr->MoveSideways(-m_fMovementSpeed * fMultiplier);
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		m_pCamera->MoveSideways(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		m_pCamera->MoveSideways(-fSpeed);
+		m_pCameraMngr->MoveSideways(m_fMovementSpeed * fMultiplier);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		m_pCameraMngr->MoveVertical(-m_fMovementSpeed * fMultiplier);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		m_pCameraMngr->MoveVertical(m_fMovementSpeed * fMultiplier);
+
+	//move the creeper
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		m_v3Creeper.x -= 0.1f;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		m_v3Creeper.x += 0.1f;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	{
+		if (m_bModifier)
+			m_v3Creeper.z -= 0.1f;
+		else
+			m_v3Creeper.y += 0.1f;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	{
+		if (m_bModifier)
+			m_v3Creeper.z += 0.1f;
+		else
+			m_v3Creeper.y -= 0.1f;
+	}
+
+	//Orient the creeper
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+	{
+		if (m_bModifier)
+			m_qCreeper = m_qCreeper * glm::angleAxis(glm::radians(1.0f), AXIS_X);
+		else
+			m_qCreeper = m_qCreeper * glm::angleAxis(glm::radians(-1.0f), AXIS_X);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+	{
+		if (m_bModifier)
+			m_qCreeper = m_qCreeper * glm::angleAxis(glm::radians(1.0f), AXIS_Y);
+		else
+			m_qCreeper = m_qCreeper * glm::angleAxis(glm::radians(-1.0f), AXIS_Y);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+	{
+		if (m_bModifier)
+			m_qCreeper = m_qCreeper * glm::angleAxis(glm::radians(1.0f), AXIS_Z);
+		else
+			m_qCreeper = m_qCreeper * glm::angleAxis(glm::radians(-1.0f), AXIS_Z);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		m_qCreeper = quaternion();
+	}
 #pragma endregion
 }
 //Joystick
 void Application::ProcessJoystick(void)
 {
+	if (!m_bFocused)
+		return;
 	/*
 	This is used for things that are continuously happening,
 	for discreet on/off use ProcessJoystickPressed/Released
@@ -427,9 +498,15 @@ void Application::ProcessJoystick(void)
 		fHorizontalSpeed *= 3.0f;
 		fVerticalSpeed *= 3.0f;
 	}
+
+	m_pCameraMngr->MoveForward(fForwardSpeed);
+	m_pCameraMngr->MoveSideways(fHorizontalSpeed);
+	m_pCameraMngr->MoveVertical(fVerticalSpeed);
 #pragma endregion
 #pragma region Camera Orientation
 	//Change the Yaw and the Pitch of the camera
+	m_pCameraMngr->ChangeYaw(-m_pController[m_uActCont]->axis[SimplexAxis_U] / 150.0f);
+	m_pCameraMngr->ChangePitch(m_pController[m_uActCont]->axis[SimplexAxis_V] / 150.0f);
 #pragma endregion
 #pragma region ModelOrientation Orientation
 	m_qArcBall = quaternion(vector3(glm::radians(m_pController[m_uActCont]->axis[SimplexAxis_POVY] / 20.0f), 0.0f, 0.0f)) * m_qArcBall;

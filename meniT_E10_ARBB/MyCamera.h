@@ -1,6 +1,6 @@
 /*----------------------------------------------
 Programmer: Alberto Bobadilla (labigm@gmail.com)
-Date: 2018/09
+Date: 2017/06
 ----------------------------------------------*/
 #ifndef __MYCAMERACLASS_H_
 #define __MYCAMERACLASS_H_
@@ -12,13 +12,9 @@ namespace Simplex
 
 class MyCamera
 {
-	// declares where forward and left are
-	vector3 m_v3Forward = vector3(0.0f, 0.0f, 1.0f);
-	vector3 m_v3Left = vector3(1.0f, 0.0f, 0.0f);
-
 	vector3 m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
 	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
-	vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above the camera
+	vector3 m_v3Up = vector3(0.0f, 1.0f, 0.0f); //What is up
 
 	bool m_bPerspective = true; //perspective view? False is Orthographic
 
@@ -45,7 +41,7 @@ public:
 	ARGUMENTS:
 	-	vector3 a_v3Position -> Where my camera is located
 	-	vector3 a_v3Target -> What I'm looking at
-	-	vector3 a_v3Upward -> What direction is up
+	-	vector3 a_v3Upward -> What is up
 	OUTPUT: ---
 	*/
 	MyCamera(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward);
@@ -107,32 +103,32 @@ public:
 	vector3 GetPosition(void);
 
 	/*
-	USAGE: Sets what the camera will be looking at
+	USAGE: Sets the position of the camera
 	ARGUMENTS: vector3 a_v3Target -> What we want the camera to look at
 	OUTPUT: ---
 	*/
 	void SetTarget(vector3 a_v3Target);
 
 	/*
-	USAGE: Gets what the camera will be looking at
+	USAGE: Gets the position of the camera
 	ARGUMENTS: ---
-	OUTPUT: target of the camera
+	OUTPUT: position of the camera
 	*/
 	vector3 GetTarget(void);
 
 	/*
-	USAGE: Sets the position of the point above the camera
-	ARGUMENTS: vector3 a_v3Above -> The point that is above the camera position
+	USAGE: Sets the position of the camera
+	ARGUMENTS: vector3 a_v3Up -> What up means in the world
 	OUTPUT: ---
 	*/
-	void SetAbove(vector3 a_v3Above);
+	void SetUp(vector3 a_v3Up);
 
 	/*
-	USAGE: Gets the position of the point above camera
+	USAGE: Gets the position of the camera
 	ARGUMENTS: ---
-	OUTPUT: position above the camera
+	OUTPUT: position of the camera
 	*/
-	vector3 GetAbove(void);
+	vector3 GetUp(void);
 
 	/*
 	USAGE: Sets Perspective Camera
@@ -197,7 +193,7 @@ public:
 	ARGUMENTS:
 	-	vector3 a_v3Position -> Where my camera is located
 	-	vector3 a_v3Target -> What I'm looking at
-	-	vector3 a_v3Upward -> What direction is up
+	-	vector3 a_v3Upward -> What is up
 	OUTPUT: ---
 	*/
 	void SetPositionTargetAndUpward(vector3 a_v3Position, vector3 a_v3Target, vector3 a_v3Upward = AXIS_Y);
@@ -216,46 +212,14 @@ public:
 	*/
 	void CalculateProjectionMatrix(void);
 
-	/*
-	USAGE: Translates the camera forward or backward
-	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
-	OUTPUT: ---
-	*/
-	void MoveForward(float a_fDistance = 0.1f);
-	/*
-	USAGE: Translates the camera Upward or downward
-	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
-	OUTPUT: ---
-	*/
-	void MoveVertical(float a_fDistance);
-	/*
-	USAGE: Translates the camera right or left
-	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
-	OUTPUT: ---
-	*/
-	void MoveHorizontal(float a_fDistance);
-	/*
-	USAGE: Translates the camera right or left
-	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
-	OUTPUT: ---
-	*/
-	void MoveSideways(float a_fDistance = 0.1f);
-
-	void RotateCamera(float rotation);
-	/*
-	USAGE: We'll see, I'm testing shizz
-	ARGUMENTS: wants the arcball
-	OUTPUT: ---
-	*/
 };
-
 
 } //namespace Simplex
 
 #endif //__MYCAMERACLASS_H_
 
   /*
-  USAGE: We'll see, I'm testing shizz
-  ARGUMENTS: wants the arcball
+  USAGE:
+  ARGUMENTS: ---
   OUTPUT: ---
   */
