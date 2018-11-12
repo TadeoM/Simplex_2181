@@ -123,7 +123,7 @@ void Octant::KillBranches()
 {
 	for each(Octant* child in m_pChild)
 	{
-		if (!child->IsLeaf()) { KillBranches(); }
+		if (!child->IsLeaf()) { child->KillBranches(); }
 		else { SafeDelete(child); }
 	}
 }
