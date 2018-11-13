@@ -15,7 +15,7 @@ namespace Simplex
 	//Adding Application to the Simplex namespace
 class Application
 {
-	Octant* m_pRoot = nullptr;//Root of the octree
+	MyOctant* m_pRoot = nullptr;//Root of the octree
 	uint m_uOctantID = -1; //Index of Octant to display
 	uint m_uObjects = 0; //Number of objects in the scene
 	uint m_uOctantLevels = 0; //Number of levels in the octree

@@ -15,7 +15,11 @@ void Simplex::MyEntityManager::Release(void)
 		SafeDelete(pEntity);
 	}
 	m_uEntityCount = 0;
-	m_mEntityArray = nullptr;
+	m_mEntityArray;
+}
+std::vector<MyEntity*> Simplex::MyEntityManager::GetEntityList(void)
+{
+	return m_mEntityArray;
 }
 Simplex::MyEntityManager* Simplex::MyEntityManager::GetInstance()
 {

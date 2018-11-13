@@ -31,7 +31,7 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
-	m_pRoot = new Octant(m_uOctantLevels,5);
+	m_pRoot = new MyOctant(m_uOctantLevels,5);
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -55,7 +55,7 @@ void Application::Update(void)
 			bStarted = true;
 			m_pSystem->StartTimerOnClock(0.5, nClock);
 			SafeDelete(m_pRoot);
-			m_pRoot = new Octant(m_uOctantLevels, 5);
+			m_pRoot = new MyOctant(m_uOctantLevels, 5);
 		}
 	}
 	//Update Entity Manager
