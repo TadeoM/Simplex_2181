@@ -5,6 +5,8 @@ using namespace Simplex;
 void Octant::Init()
 {
 	//m_EntityList = m_pEntityMngr.entity
+	m_pMeshMngr = MeshManager::GetInstance();
+	m_pEntityMngr = EntityManager::GetInstance();
 }
 
 void Octant::Swap(Octant& other)
@@ -24,26 +26,70 @@ Octant::Octant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5)
 		m_pRoot = this;
 	}
 
-	Octant::Init();
+	Init();
 	m_uOctantCount++;
 	m_uMaxLevel = a_nMaxLevel;
 	m_uIdealEntityCount = a_nIdealEntityCount;
-
 }
 
 Octant::Octant(vector3 a_v3Center, float a_fSize)
 {
-
+	Init();
+	m_uID = 0;
+	m_uLevel = 0;
+	m_uChildren = 0;
+	m_fSize = a_fSize;
+	m_v3Center = a_v3Center;
+	m_v3Min = vector3(-a_fSize / 2);
+	m_v3Max = vector3(a_fSize);
+	m_pParent;
+	
 }
 
 Octant::Octant(Octant const& other)
 {
+	m_uID = other.m_uID;
+	m_uLevel = other.m_uLevel;
+	m_uChildren = other.m_uChildren;
+	m_fSize = other.m_fSize;
+	m_pMeshMngr = other.m_pMeshMngr;
+	m_pEntityMngr = other.m_pEntityMngr;
 
+	m_v3Center = other.m_v3Center;
+	m_v3Min = other.m_v3Min;
+	m_v3Max = other.m_v3Max;
+
+	*m_pParent = *other.m_pParent;
+	for (GLuint i = 0; i < 8; i++)
+	{
+		*m_pChild[i] = *other.m_pChild[i];
+	}
+	m_EntityList = other.m_EntityList;
+	*m_pRoot = *other.m_pRoot;
+	m_lChild = other.m_lChild;
 }
 
 Octant& Octant::operator=(Octant const& other)
 {
+	m_uID = other.m_uID;
+	m_uLevel = other.m_uLevel;
+	m_uChildren = other.m_uChildren;
+	m_fSize = other.m_fSize;
+	m_pMeshMngr = other.m_pMeshMngr;
+	m_pEntityMngr = other.m_pEntityMngr;
 
+	m_v3Center = other.m_v3Center;
+	m_v3Min = other.m_v3Min;
+	m_v3Max = other.m_v3Max;
+
+	*m_pParent = *other.m_pParent;
+	for (GLuint i = 0; i < 8; i++)
+	{
+		*m_pChild[i] = *other.m_pChild[i];
+	}
+	m_EntityList = other.m_EntityList;
+	*m_pRoot = *other.m_pRoot;
+	m_lChild = other.m_lChild;
 }
 
 Octant::~Octant() { Release(); }
