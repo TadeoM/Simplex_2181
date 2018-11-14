@@ -15,8 +15,8 @@ void MyOctant::Init()
 	m_pMeshMngr = MeshManager::GetInstance();
 	m_pEntityMngr = MyEntityManager::GetInstance();
 	
-	/*std::vector<MyEntity> l_EntityList = m_pEntityMngr->GetEntityList();
-		uint iEntityCount = l_EntityList.size();
+	std::vector<MyEntity> l_EntityList = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = l_EntityList.size();
 	std::vector<vector3> v3MaxMin_List;
 	for (uint i = 0; i < iEntityCount; i++)
 	{
@@ -31,8 +31,8 @@ void MyOctant::Init()
 	{
 		m_pChild[i] = nullptr;
 	}
-	if(m_pChild)
-	pRigidBody = new MyRigidBody(v3MaxMin_List);*/
+	pRigidBody = new MyRigidBody(v3MaxMin_List);
+
 	//IsColliding();
 }
 
@@ -217,7 +217,7 @@ bool MyOctant::IsColliding(uint a_uRBIndex)
 void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 {
 	matrix4 octBox = glm::translate(m_v3Center) * glm::scale(vector3(m_v3Max.x - m_v3Min.x, m_v3Max.y - m_v3Min.y, m_v3Max.z - m_v3Min.z));
-	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(vector3(70)), C_BLUE);
+	m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_v3Center) * glm::scale(vector3(70)), C_BLUE);
 
 	for (GLuint i = 0; i < 8; i++)
 	{
@@ -230,9 +230,16 @@ void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 
 void MyOctant::Display(vector3 a_v3Color)
 {
-	matrix4 octBox = glm::translate(m_v3Center) * glm::scale(vector3(m_v3Max.x - m_v3Min.x, m_v3Max.y - m_v3Min.y, m_v3Max.z - m_v3Min.z));
-	//pRigidBody->AddToRenderList();
-	m_pMeshMngr->AddWireCubeToRenderList(glm::scale(vector3(70)), C_BLUE);
+	m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_v3Center) * glm::scale(vector3(m_fSize)), C_BLUE);
+
+	for (GLuint i = 0; i < 8; i++)
+	{
+		if (m_pChild[i])
+		{
+			m_pChild[i]->Display(C_BLUE);
+		}
+	}
+
 }
 
 void MyOctant::DisplayLeafs(vector3 a_v3Color)
@@ -257,14 +264,14 @@ void MyOctant::Subdivide()
 	if (IsLeaf())
 	{
 		vector3 v3CenterPoints[8];
-		v3CenterPoints[0] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
-		v3CenterPoints[1] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
-		v3CenterPoints[2] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
-		v3CenterPoints[3] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
-		v3CenterPoints[4] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
-		v3CenterPoints[5] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
-		v3CenterPoints[6] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
-		v3CenterPoints[7] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
+		v3CenterPoints[0] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y + (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
+		v3CenterPoints[1] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y + (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
+		v3CenterPoints[2] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
+		v3CenterPoints[3] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
+		v3CenterPoints[4] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
+		v3CenterPoints[5] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y + (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
+		v3CenterPoints[6] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
+		v3CenterPoints[7] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y + (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
 
 		m_uChildren = 8;
 
