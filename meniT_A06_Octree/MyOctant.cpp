@@ -97,8 +97,8 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	m_uChildren = 0;
 	m_fSize = 35.0f;
 	m_v3Center = vector3(0.0f);
-	m_v3Min = vector3(m_v3Center) + vector3(-m_fSize / 2);
-	m_v3Max = vector3(m_v3Center) + vector3(m_fSize / 2);
+	m_v3Min = vector3(m_v3Center) - m_fSize;
+	m_v3Max = vector3(m_v3Center) + m_fSize;
 }
 
 MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
@@ -117,8 +117,8 @@ MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 	m_uChildren = 0;
 	m_fSize = a_fSize;
 	m_v3Center = a_v3Center;
-	m_v3Min = vector3(m_v3Center) + vector3(-a_fSize / 2);
-	m_v3Max = vector3(m_v3Center) + vector3(a_fSize / 2);
+	m_v3Min = vector3(m_v3Center) + vector3(-a_fSize);
+	m_v3Max = vector3(m_v3Center) + vector3(a_fSize);
 }
 
 MyOctant::MyOctant(MyOctant const& other)
@@ -257,18 +257,20 @@ void MyOctant::Subdivide()
 	if (IsLeaf())
 	{
 		vector3 v3CenterPoints[8];
-		v3CenterPoints[0] = vector3(m_v3Max.x + (m_fSize / 2.0f), m_v3Max.y + (m_fSize / 2.0f), m_v3Max.z + (m_fSize / 2.0f));
-		v3CenterPoints[1] = vector3(m_v3Max.x + (m_fSize / 2.0f), m_v3Max.y + (m_fSize / 2.0f), m_v3Max.z - (m_fSize / 2.0f));
-		v3CenterPoints[2] = vector3(m_v3Max.x + (m_fSize / 2.0f), m_v3Max.y - (m_fSize / 2.0f), m_v3Max.z + (m_fSize / 2.0f));
-		v3CenterPoints[3] = vector3(m_v3Max.x + (m_fSize / 2.0f), m_v3Max.y - (m_fSize / 2.0f), m_v3Max.z - (m_fSize / 2.0f));
-		v3CenterPoints[4] = vector3(m_v3Max.x - (m_fSize / 2.0f), m_v3Max.y - (m_fSize / 2.0f), m_v3Max.z - (m_fSize / 2.0f));
-		v3CenterPoints[5] = vector3(m_v3Max.x - (m_fSize / 2.0f), m_v3Max.y + (m_fSize / 2.0f), m_v3Max.z + (m_fSize / 2.0f));
-		v3CenterPoints[6] = vector3(m_v3Max.x - (m_fSize / 2.0f), m_v3Max.y - (m_fSize / 2.0f), m_v3Max.z + (m_fSize / 2.0f));
-		v3CenterPoints[7] = vector3(m_v3Max.x - (m_fSize / 2.0f), m_v3Max.y + (m_fSize / 2.0f), m_v3Max.z - (m_fSize / 2.0f));
+		v3CenterPoints[0] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
+		v3CenterPoints[1] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
+		v3CenterPoints[2] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
+		v3CenterPoints[3] = vector3(m_v3Center.x + (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
+		v3CenterPoints[4] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
+		v3CenterPoints[5] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
+		v3CenterPoints[6] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y - (m_fSize / 2.0f), m_v3Center.z + (m_fSize / 2.0f));
+		v3CenterPoints[7] = vector3(m_v3Center.x - (m_fSize / 2.0f), m_v3Center.y + (m_fSize / 2.0f), m_v3Center.z - (m_fSize / 2.0f));
+
+		m_uChildren = 8;
 
 		for (int i = 0; i < 8; i++)
 		{
-			m_pChild[i] = new MyOctant(m_v3Center[i], m_fSize / 2.0f);
+			m_pChild[i] = new MyOctant(v3CenterPoints[i], (m_fSize / 2.0f));
 			m_pChild[i]->m_pParent = this;
 		}
 
