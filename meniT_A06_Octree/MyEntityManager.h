@@ -15,10 +15,10 @@ class MyEntityManager
 {
 	typedef MyEntity* PEntity; //MyEntity Pointer
 	uint m_uEntityCount = 0; //number of elements in the list
-	std::vector<MyEntity*> m_mEntityArray; //array of MyEntity pointers
+	PEntity* m_mEntityArray = nullptr; //array of MyEntity pointers
 	static MyEntityManager* m_pInstance; // Singleton pointer
 public:
-	std::vector<MyEntity*> GetEntityList(void);
+	std::vector<MyEntity> GetEntityList();
 	/*
 	Usage: Gets the singleton pointer
 	Arguments: ---

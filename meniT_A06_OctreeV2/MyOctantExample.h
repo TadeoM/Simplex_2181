@@ -2,18 +2,16 @@
 Programmer: Alberto Bobadilla (labigm@gmail.com)
 Date: 2017/07
 ----------------------------------------------*/
-#ifndef __OCTANTCLASS_H_
-#define __OCTANTCLASS_H_
+#ifndef __MYOCTANTCLASS_H_
+#define __MYOCTANTCLASS_H_
 
-#include "Simplex\Simplex.h"
-#include "Simplex\Physics\EntityManager.h"
 #include "MyEntityManager.h"
 
 namespace Simplex
 {
 
 //System Class
-class SimplexDLL MyOctant
+class MyOctant
 {
 	static uint m_uOctantCount; //will store the number of octants instantiated
 	static uint m_uMaxLevel;//will store the maximum level an octant can go to
@@ -27,7 +25,6 @@ class SimplexDLL MyOctant
 
 	MeshManager* m_pMeshMngr = nullptr;//Mesh Manager singleton
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager Singleton
-	MyRigidBody* pRigidBody;
 
 	vector3 m_v3Center = vector3(0.0f); //Will store the center point of the octant
 	vector3 m_v3Min = vector3(0.0f); //Will store the minimum vector of the octant
@@ -80,7 +77,7 @@ public:
 	/*
 	USAGE: Changes object contents for other object's
 	ARGUMENTS:
-	- Octant& other -> object to swap content from
+	- MyOctant& other -> object to swap content from
 	OUTPUT: ---
 	*/
 	void Swap(MyOctant& other);
@@ -117,15 +114,15 @@ public:
 	*/
 	bool IsColliding(uint a_uRBIndex);
 	/*
-	USAGE: Displays the Octant volume specified by index including the objects underneath
+	USAGE: Displays the MyOctant volume specified by index including the objects underneath
 	ARGUMENTS:
-	- uint a_nIndex -> Octant to be displayed.
+	- uint a_nIndex -> MyOctant to be displayed.
 	- vector3 a_v3Color = REYELLOW -> Color of the volume to display.
 	OUTPUT: ---
 	*/
 	void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
 	/*
-	USAGE: Displays the Octant volume in the color specified
+	USAGE: Displays the MyOctant volume in the color specified
 	ARGUMENTS:
 	- vector3 a_v3Color = REYELLOW -> Color of the volume to display.
 	OUTPUT: ---
@@ -153,23 +150,23 @@ public:
 	/*
 	USAGE: returns the child specified in the index
 	ARGUMENTS: uint a_nChild -> index of the child (from 0 to 7)
-	OUTPUT: Octant object (child in index)
+	OUTPUT: MyOctant object (child in index)
 	*/
 	MyOctant* GetChild(uint a_nChild);
 	/*
 	USAGE: returns the parent of the octant
 	ARGUMENTS: ---
-	OUTPUT: Octant object (parent)
+	OUTPUT: MyOctant object (parent)
 	*/
 	MyOctant* GetParent(void);
 	/*
-	USAGE: Asks the Octant if it does not contain any children (its a leaf)
+	USAGE: Asks the MyOctant if it does not contain any children (its a leaf)
 	ARGUMENTS: ---
 	OUTPUT: It contains no children
 	*/
 	bool IsLeaf(void);
 	/*
-	USAGE: Asks the Octant if it contains more than this many Bounding Objects
+	USAGE: Asks the MyOctant if it contains more than this many Bounding Objects
 	ARGUMENTS:
 	- uint a_nEntities -> Number of Entities to query
 	OUTPUT: It contains at least this many Entities

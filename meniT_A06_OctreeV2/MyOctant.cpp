@@ -2,9 +2,13 @@
 
 using namespace Simplex;
 
+uint MyOctant::m_uOctantCount; 
+uint MyOctant::m_uMaxLevel;
+uint MyOctant::m_uIdealEntityCount;
+
 void MyOctant::Init()
 {
-	m_pMeshMngr = MeshManager::GetInstance();
+	/*m_pMeshMngr = MeshManager::GetInstance();
 	m_pEntityMngr = MyEntityManager::GetInstance();
 	std::vector<MyEntity*> l_EntityList = m_pEntityMngr->GetEntityList();
 	uint iEntityCount = l_EntityList.size();
@@ -22,15 +26,55 @@ void MyOctant::Init()
 	{
 		m_pChild[i] = nullptr;
 	}
-	pRigidBody = new MyRigidBody(v3MaxMin_List);
+	pRigidBody = new MyRigidBody(v3MaxMin_List);*/
 }
 
 void MyOctant::Swap(MyOctant& other)
 {
+	MyOctant tempOctant = MyOctant(other);
+	// copy this Octant into the other
+	other.m_uID = m_uID;
+	other.m_uLevel = m_uLevel;
+	other.m_uChildren = m_uChildren;
+	other.m_fSize = m_fSize;
+	other.m_pMeshMngr = m_pMeshMngr;
+	other.m_pEntityMngr = m_pEntityMngr;
+	other.m_v3Center = m_v3Center;
+	other.m_v3Min = m_v3Min;
+	other.m_v3Max = m_v3Max;
+	*other.m_pParent = *m_pParent;
 
+	for (GLuint i = 0; i < 8; i++)
+	{
+		*other.m_pChild[i] = *m_pChild[i];
+	}
+	other.m_EntityList = m_EntityList;
+	*other.m_pRoot = *m_pRoot;
+	other.m_lChild = m_lChild;
+
+	// copy the tempOctant
+	m_uID = tempOctant.m_uID;
+	m_uLevel = tempOctant.m_uLevel;
+	m_uChildren = tempOctant.m_uChildren;
+	m_fSize = tempOctant.m_fSize;
+	m_pMeshMngr = tempOctant.m_pMeshMngr;
+	m_pEntityMngr = tempOctant.m_pEntityMngr;
+
+	m_v3Center = tempOctant.m_v3Center;
+	m_v3Min = tempOctant.m_v3Min;
+	m_v3Max = tempOctant.m_v3Max;
+
+	*m_pParent = *tempOctant.m_pParent;
+	for (GLuint i = 0; i < 8; i++)
+	{
+		*m_pChild[i] = *tempOctant.m_pChild[i];
+	}
+	m_EntityList = tempOctant.m_EntityList;
+	*m_pRoot = *tempOctant.m_pRoot;
+	m_lChild = tempOctant.m_lChild;
 }
 
-MyOctant::MyOctant(uint a_nMaxLevel = 2, uint a_nIdealEntityCount = 5)
+MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 {
 	// when does m_pMeshMngr get initialized
 	// same for EntityMngr
@@ -57,8 +101,6 @@ MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 	m_v3Center = a_v3Center;
 	m_v3Min = vector3(-a_fSize / 2);
 	m_v3Max = vector3(a_fSize);
-	m_pParent;
-	
 }
 
 MyOctant::MyOctant(MyOctant const& other)
@@ -86,7 +128,7 @@ MyOctant::MyOctant(MyOctant const& other)
 
 MyOctant& MyOctant::operator=(MyOctant const& other)
 {
-	m_uID = other.m_uID;
+	/*m_uID = other.m_uID;
 	m_uLevel = other.m_uLevel;
 	m_uChildren = other.m_uChildren;
 	m_fSize = other.m_fSize;
@@ -104,7 +146,9 @@ MyOctant& MyOctant::operator=(MyOctant const& other)
 	}
 	m_EntityList = other.m_EntityList;
 	*m_pRoot = *other.m_pRoot;
-	m_lChild = other.m_lChild;
+	m_lChild = other.m_lChild;*/
+
+	return (MyOctant)other;
 }
 
 MyOctant::~MyOctant() { Release(); }
@@ -131,7 +175,7 @@ vector3 MyOctant::GetMaxGlobal()
 
 bool MyOctant::IsColliding(uint a_uRBIndex)
 {
-	std::vector<MyEntity*> l_EntityList = m_pEntityMngr->GetEntityList();
+	/*std::vector<MyEntity*> l_EntityList = m_pEntityMngr->GetEntityList();
 	uint iEntityCount = l_EntityList.size();
 	for (uint i = 0; i < iEntityCount; i++)
 	{
@@ -140,16 +184,17 @@ bool MyOctant::IsColliding(uint a_uRBIndex)
 		{
 			l_EntityList[i]->AddDimension(m_uID);
 		}
-	}
+	}*/
+	return false;
 }
 
-void MyOctant::Display(vector3 a_v3Color = C_YELLOW)
+void MyOctant::Display(vector3 a_v3Color)
 {
 	pRigidBody->AddToRenderList();
 	//m_pMeshMngr->AddWireCubeToRenderList(glm::scale(vector3(70)), C_BLUE);
 }
 
-void MyOctant::DisplayLeafs(vector3 a_v3Color = C_YELLOW)
+void MyOctant::DisplayLeafs(vector3 a_v3Color)
 {
 
 }
@@ -205,7 +250,7 @@ void MyOctant::KillBranches()
 	}
 }
 
-void MyOctant::ConstructTree(uint a_MaxLevel = 3)
+void MyOctant::ConstructTree(uint a_MaxLevel)
 {
 
 }
@@ -217,7 +262,12 @@ uint MyOctant::GetOctantCount()
 
 void MyOctant::AssignIDtoEntity()
 {
+	if (m_pParent != nullptr)
+	{
 
+	}
+	else
+		m_uID = 0;
 }
 
 void MyOctant::Release()

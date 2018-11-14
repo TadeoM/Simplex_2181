@@ -30,8 +30,6 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
-	// gotta make the octant always be a square 
-	m_pRoot = new MyOctant();
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -78,5 +76,4 @@ void Application::Release(void)
 {
 	//release GUI
 	ShutdownGUI();
-	SafeDelete(m_pRoot);
 }
