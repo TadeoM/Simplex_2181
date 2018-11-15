@@ -8,23 +8,25 @@ uint MyOctant::m_uIdealEntityCount;
 uint MyOctant::currentMaxLevel;
 uint MyOctant::numCreated;
 uint MyOctant::uintlayers;
-uint MyOctant::uinttotalOcts;
+uint MyOctant::uIntTotalOcts;
 
 void MyOctant::Init()
 {
 	m_pMeshMngr = MeshManager::GetInstance();
 	m_pEntityMngr = MyEntityManager::GetInstance();
 	
-	std::vector<MyEntity> l_EntityList = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_EntityList.size();
+	MyEntity** l_EntityList = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = m_pEntityMngr->GetEntityCount();
 	std::vector<vector3> v3MaxMin_List;
 	for (uint i = 0; i < iEntityCount; i++)
 	{
-		MyRigidBody* pRG = l_EntityList[i].GetRigidBody();
+		MyRigidBody* pRG = l_EntityList[i]->GetRigidBody();
+		m_EntityList.push_back(i);
 		vector3 v3Min = pRG->GetMinGlobal();
 		vector3 v3Max = pRG->GetMaxGlobal();
 		v3MaxMin_List.push_back(v3Min);
 		v3MaxMin_List.push_back(v3Max);
+		
 	}
 
 	for (GLuint i = 0; i < 8; i++)
@@ -32,7 +34,10 @@ void MyOctant::Init()
 		m_pChild[i] = nullptr;
 	}
 	pRigidBody = new MyRigidBody(v3MaxMin_List);
-
+	m_v3Min = pRigidBody->GetMinGlobal(); 
+	m_v3Max = pRigidBody->GetMaxGlobal();
+	m_v3Center = pRigidBody->GetCenterGlobal();
+	m_fSize = glm::length(pRigidBody->GetHalfWidth()) + 10;
 	//IsColliding();
 }
 
@@ -95,10 +100,15 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	currentMaxLevel = 0;
 	m_uLevel = 0;
 	m_uChildren = 0;
-	m_fSize = 35.0f;
-	m_v3Center = vector3(0.0f);
-	m_v3Min = vector3(m_v3Center) - m_fSize;
-	m_v3Max = vector3(m_v3Center) + m_fSize;
+	for (GLuint i = 0; i < a_nMaxLevel; i++)
+	{
+		Subdivide();
+	}
+	for (GLuint i = 0; i < m_EntityList.size(); i++)
+	{
+		Add(*m_pEntityMngr->GetEntity(i));
+	}
+
 }
 
 MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
@@ -171,7 +181,7 @@ MyOctant& MyOctant::operator=(MyOctant const& other)
 
 MyOctant::~MyOctant() 
 { 
-	if (IsLeaf())
+	if (this != nullptr && !IsLeaf())
 	{
 		KillBranches();
 	}
@@ -202,30 +212,17 @@ vector3 MyOctant::GetMaxGlobal()
 
 bool MyOctant::IsColliding(uint a_uRBIndex)
 {
-	std::vector<MyEntity> l_EntityList = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = l_EntityList.size();
-	for (uint i = 0; i < iEntityCount; i++)
+	for (GLuint i = 0; i < m_EntityList.size(); i++)
 	{
-		MyRigidBody* pRB = l_EntityList[i].GetRigidBody();
-		if (pRB->IsColliding(pRigidBody))
+		if (pRigidBody->IsColliding(m_pEntityMngr->GetRigidBody())
 		{
-			l_EntityList[i].AddDimension(m_uID);
+
 		}
 	}
 	return false;
 }
 void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 {
-	matrix4 octBox = glm::translate(m_v3Center) * glm::scale(vector3(m_v3Max.x - m_v3Min.x, m_v3Max.y - m_v3Min.y, m_v3Max.z - m_v3Min.z));
-	m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_v3Center) * glm::scale(vector3(70)), C_BLUE);
-
-	for (GLuint i = 0; i < 8; i++)
-	{
-		if (m_pChild[i] != nullptr)
-		{
-			m_pChild[i]->Display();
-		}
-	}
 }
 
 void MyOctant::Display(vector3 a_v3Color)
@@ -280,7 +277,6 @@ void MyOctant::Subdivide()
 			m_pChild[i] = new MyOctant(v3CenterPoints[i], (m_fSize / 2.0f));
 			m_pChild[i]->m_pParent = this;
 		}
-
 	}
 	else 
 	{
@@ -306,6 +302,15 @@ bool MyOctant::IsLeaf()
 {
 	if (m_uChildren == 0) return true;
 	else return false;
+}
+
+void MyOctant::Add(MyEntity object) 
+{
+	GLuint index = m_pEntityMngr->GetEntityIndex(object.GetUniqueID());
+	if (IsColliding(m_EntityList[index]))
+	{
+		std::cout << "Hello" << std::endl;
+	}
 }
 
 bool MyOctant::ContainsMoreThan(uint a_Entities)

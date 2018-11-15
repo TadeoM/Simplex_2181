@@ -19,7 +19,7 @@ Programmer: Alberto Bobadilla(labigm@gmail.com)
 		static uint currentMaxLevel;
 		static uint numCreated;
 		static uint uintlayers;
-		static uint uinttotalOcts;
+		static uint uIntTotalOcts;
 
 		uint m_uID = 0; //Will store the current ID for this octant
 		uint m_uLevel = 0; //Will store the current level of the octant
@@ -203,6 +203,12 @@ Programmer: Alberto Bobadilla(labigm@gmail.com)
 		OUTPUT: ---
 		*/
 		uint GetOctantCount(void);
+		void Add(MyEntity);
+		/*
+		USAGE: Adds entity to 
+		ARGUMENTS: Take an entity
+		OUTPUT: ---
+		*/
 
 	private:
 		/*

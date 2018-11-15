@@ -130,11 +130,9 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		{
 			m_pEntityMngr->ClearDimensionSetAll();
 			++m_uOctantLevels;
-			m_pRoot->Subdivide();
 			
-			/*SafeDelete(m_pRoot);
-			m_pRoot = new MyOctant(m_uOctantLevels, 5);*/
-			
+			SafeDelete(m_pRoot);
+			m_pRoot = new MyOctant(m_uOctantLevels, 5);
 		}
 		break;
 	case sf::Keyboard::Subtract:
@@ -142,11 +140,10 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		{
 			m_pEntityMngr->ClearDimensionSetAll();
 			--m_uOctantLevels;
-			m_pRoot->Subdivide();
-			/*
+			
 			SafeDelete(m_pRoot);
 			m_pRoot = new MyOctant(m_uOctantLevels, 5);
-			*/
+			
 		}
 		break;
 	case sf::Keyboard::LShift:
