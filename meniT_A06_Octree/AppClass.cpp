@@ -13,11 +13,13 @@ void Application::InitVariables(void)
 #ifdef DEBUG
 	uint uInstances = 100;
 #else
-	uint uInstances = 1849;
+	uint uInstances = 100;
 #endif
 	int nSquare = static_cast<int>(std::sqrt(uInstances));
 	m_uObjects = nSquare * nSquare;
 	uint uIndex = -1;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.obj");
+	m_pEntityMngr->SetModelMatrix(glm::translate(vector3(50.0f, 0.0f, 0.0f)));
 	for (int i = 0; i < nSquare; i++)
 	{
 		for (int j = 0; j < nSquare; j++)

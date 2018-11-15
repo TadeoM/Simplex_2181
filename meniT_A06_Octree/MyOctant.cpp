@@ -14,31 +14,6 @@ void MyOctant::Init()
 {
 	m_pMeshMngr = MeshManager::GetInstance();
 	m_pEntityMngr = MyEntityManager::GetInstance();
-	
-	MyEntity** l_EntityList = m_pEntityMngr->GetEntityList();
-	uint iEntityCount = m_pEntityMngr->GetEntityCount();
-	std::vector<vector3> v3MaxMin_List;
-	for (uint i = 0; i < iEntityCount; i++)
-	{
-		MyRigidBody* pRG = l_EntityList[i]->GetRigidBody();
-		m_EntityList.push_back(i);
-		vector3 v3Min = pRG->GetMinGlobal();
-		vector3 v3Max = pRG->GetMaxGlobal();
-		v3MaxMin_List.push_back(v3Min);
-		v3MaxMin_List.push_back(v3Max);
-		
-	}
-
-	for (GLuint i = 0; i < 8; i++)
-	{
-		m_pChild[i] = nullptr;
-	}
-	pRigidBody = new MyRigidBody(v3MaxMin_List);
-	m_v3Min = pRigidBody->GetMinGlobal(); 
-	m_v3Max = pRigidBody->GetMaxGlobal();
-	m_v3Center = pRigidBody->GetCenterGlobal();
-	m_fSize = glm::length(pRigidBody->GetHalfWidth()) + 10;
-	//IsColliding();
 }
 
 void MyOctant::Swap(MyOctant& other)
@@ -89,6 +64,32 @@ void MyOctant::Swap(MyOctant& other)
 MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 {
 	Init();
+
+	MyEntity** l_EntityList = m_pEntityMngr->GetEntityList();
+	uint iEntityCount = m_pEntityMngr->GetEntityCount();
+	std::vector<vector3> v3MaxMin_List;
+	for (uint i = 0; i < iEntityCount; i++)
+	{
+		MyRigidBody* pRG = l_EntityList[i]->GetRigidBody();
+		m_EntityList.push_back(i);
+		vector3 v3Min = pRG->GetMinGlobal();
+		vector3 v3Max = pRG->GetMaxGlobal();
+		v3MaxMin_List.push_back(v3Min);
+		v3MaxMin_List.push_back(v3Max);
+
+	}
+
+	for (GLuint i = 0; i < 8; i++)
+	{
+		m_pChild[i] = nullptr;
+	}
+	pRigidBody = new MyRigidBody(v3MaxMin_List);
+	m_v3Min = pRigidBody->GetMinGlobal();
+	m_v3Max = pRigidBody->GetMaxGlobal();
+	m_v3Center = pRigidBody->GetCenterGlobal();
+	m_fSize = glm::length(pRigidBody->GetHalfWidth()) + 10;
+	//IsColliding();
+
 	if (m_uOctantCount == 0)
 	{
 		m_pRoot = this;
@@ -108,21 +109,26 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	{
 		Add(*m_pEntityMngr->GetEntity(i));
 	}
+	pRigidBody->MakeCube();
 
 }
 
 MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 {
 	Init();
+	std::vector<vector3> v3MaxMin_List;
+	v3MaxMin_List.push_back(vector3(a_fSize) - a_v3Center);
+	v3MaxMin_List.push_back(vector3(a_fSize) + a_v3Center);
+	pRigidBody = new MyRigidBody(v3MaxMin_List);
 
 	if (m_uOctantCount + 1 % 8 == 0)
 	{
 		currentMaxLevel++;
 	}
 	m_uLevel = currentMaxLevel;
-
-	m_uID = m_uOctantCount;
+	
 	m_uOctantCount++;
+	m_uID = m_uOctantCount;
 		
 	m_uChildren = 0;
 	m_fSize = a_fSize;
@@ -214,7 +220,7 @@ bool MyOctant::IsColliding(uint a_uRBIndex)
 {
 	for (GLuint i = 0; i < m_EntityList.size(); i++)
 	{
-		if (pRigidBody->IsColliding(m_pEntityMngr->GetRigidBody())
+		if (pRigidBody->IsColliding(m_pEntityMngr->GetRigidBody()))
 		{
 
 		}
@@ -228,15 +234,13 @@ void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 void MyOctant::Display(vector3 a_v3Color)
 {
 	m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_v3Center) * glm::scale(vector3(m_fSize)), C_BLUE);
-
-	for (GLuint i = 0; i < 8; i++)
+	if (m_pChild[0])
 	{
-		if (m_pChild[i])
+		for (GLuint i = 0; i < 8; i++)
 		{
 			m_pChild[i]->Display(C_BLUE);
 		}
 	}
-
 }
 
 void MyOctant::DisplayLeafs(vector3 a_v3Color)
@@ -265,6 +269,7 @@ void MyOctant::Subdivide()
 		v3CenterPoints[1] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y + (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
 		v3CenterPoints[2] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
 		v3CenterPoints[3] = vector3(m_v3Center.x + (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
+
 		v3CenterPoints[4] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z - (m_fSize / 4.0f));
 		v3CenterPoints[5] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y + (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
 		v3CenterPoints[6] = vector3(m_v3Center.x - (m_fSize / 4.0f), m_v3Center.y - (m_fSize / 4.0f), m_v3Center.z + (m_fSize / 4.0f));
