@@ -26,6 +26,7 @@ class Application
 	MyRigidBody* m_pSteveRB = nullptr; //Rigid Body of the model
 	
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer
+	
 
 private:
 	static ImGuiObject gui; //GUI object

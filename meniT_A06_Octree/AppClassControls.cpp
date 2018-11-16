@@ -112,18 +112,11 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		m_pCameraMngr->SetFPS(bFPSControl);
 		break;
 	case sf::Keyboard::PageUp:
-		++m_uOctantID;
-		/*
-		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+		//++m_uOctantID;
+		displayOctants = true;
 		break;
 	case sf::Keyboard::PageDown:
-		--m_uOctantID;
-		/*
-		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+		displayOctants = false;
 		break;
 	case sf::Keyboard::Add:
 		if (m_uOctantLevels < 4)

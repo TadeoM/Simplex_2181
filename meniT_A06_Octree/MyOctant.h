@@ -165,6 +165,12 @@ Programmer: Alberto Bobadilla(labigm@gmail.com)
 		*/
 		MyOctant* GetParent(void);
 		/*
+		USAGE: Sets the variable that require a parent
+		ARGUMENTS: ---
+		OUTPUT: ---
+		*/
+		void MyOctant::SetParent(void);
+		/*
 		USAGE: Asks the Octant if it does not contain any children (its a leaf)
 		ARGUMENTS: ---
 		OUTPUT: It contains no children
@@ -203,7 +209,7 @@ Programmer: Alberto Bobadilla(labigm@gmail.com)
 		OUTPUT: ---
 		*/
 		uint GetOctantCount(void);
-		void Add(MyEntity);
+		void Add();
 		/*
 		USAGE: Adds entity to 
 		ARGUMENTS: Take an entity

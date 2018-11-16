@@ -11,9 +11,9 @@ void Application::InitVariables(void)
 	m_pLightMngr->SetPosition(vector3(0.0f, 3.0f, 13.0f), 1); //set the position of first light (0 is reserved for ambient light)
 
 #ifdef DEBUG
-	uint uInstances = 100;
+	uint uInstances = 900;
 #else
-	uint uInstances = 100;
+	uint uInstances = 900;
 #endif
 	int nSquare = static_cast<int>(std::sqrt(uInstances));
 	m_uObjects = nSquare * nSquare;
@@ -48,7 +48,6 @@ void Application::Update(void)
 	
 	//Update Entity Manager
 	m_pEntityMngr->Update();
-	m_pRoot->Display();
 
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
@@ -59,7 +58,8 @@ void Application::Display(void)
 	ClearScreen();
 
 	//display octree
-	m_pRoot->Display();
+	if(displayOctants)
+		m_pRoot->Display();
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();

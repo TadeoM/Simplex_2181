@@ -49,8 +49,8 @@ void Application::DrawGUI(void)
 			ImGui::Text("	 F3: Orthographic Y\n");
 			ImGui::Text("	 F4: Orthographic Z\n");
 			ImGui::Separator();
-			ImGui::Text(" PageUp: Increment Octant display\n");
-			ImGui::Text(" PageDw: Decrement Octant display\n");
+			ImGui::Text(" PageUp: Enable Display for Octants Wireframe\n");
+			ImGui::Text(" PageDw: Disable Display for Octants Wireframe\n");
 			ImGui::Separator();
 			ImGui::Text("	  -: Increment Octree subdivision\n");
 			ImGui::Text("	  +: Decrement Octree subdivision\n");
