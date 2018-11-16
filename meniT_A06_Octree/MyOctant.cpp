@@ -34,11 +34,12 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 		v3MaxMin_List.push_back(v3Min);
 		v3MaxMin_List.push_back(v3Max);
 	}
-
+	// set all variables
 	for (GLuint i = 0; i < 8; i++)
 	{
 		m_pChild[i] = nullptr;
 	}
+
 	pRigidBody = new MyRigidBody(v3MaxMin_List);
 
 	m_fSize = glm::length(pRigidBody->GetHalfWidth()) + 10;
@@ -50,6 +51,7 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	currentMaxLevel = 0;
 	m_uLevel = 0;
 	m_uChildren = 0;
+	// subdivide as many times as we need levels
 	for (GLuint i = 0; i < m_uMaxLevel; i++)
 	{
 		Subdivide();
@@ -60,6 +62,7 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 
 MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 {
+	// set all variables
 	Init();
 	std::vector<vector3> v3MaxMin_List;
 	v3MaxMin_List.push_back(a_v3Center - vector3(a_fSize));
@@ -171,7 +174,7 @@ void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 
 void MyOctant::Display(vector3 a_v3Color)
 {
-	//m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_v3Center) * glm::scale(vector3(m_fSize)), C_BLUE);
+	// draws all the children recursively
 	pRigidBody->AddToRenderList();
 	if (m_pChild[0])
 	{
@@ -195,6 +198,7 @@ void MyOctant::Subdivide()
 		float fSize = (v3HalfWidth.x) / 2.0f;
 		float fCenters = fSize;
 
+		// gets all the center points
 		v3CenterPoints[0] = vector3(v3Center + vector3(fCenters, fCenters, fCenters));
 		v3CenterPoints[1] = vector3(v3Center + vector3(-fCenters, fCenters, fCenters));
 		v3CenterPoints[2] = vector3(v3Center + vector3(-fCenters, -fCenters, fCenters));
@@ -209,6 +213,7 @@ void MyOctant::Subdivide()
 
 		for (int i = 0; i < 8; i++)
 		{
+			// create the child octants
 			m_pChild[i] = new MyOctant(v3CenterPoints[i], fSize);
 			m_pChild[i]->m_pParent = this;
 			m_pChild[i]->SetParent();
@@ -217,6 +222,7 @@ void MyOctant::Subdivide()
 	}
 	else
 	{
+		// recursively subdivide
 		for (GLuint i = 0; i < 8; i++)
 		{
 			m_pChild[i]->Subdivide();
@@ -232,8 +238,9 @@ MyOctant* MyOctant::GetChild(uint a_nChild)
 
 void MyOctant::SetParent()
 {
-	m_pRoot = m_pParent->m_pRoot;
-	m_uLevel = m_pParent->m_uLevel + 1;
+	
+	m_pRoot = m_pParent->m_pRoot; // sets the root to be the same for everyone
+	m_uLevel = m_pParent->m_uLevel + 1; // make the level one higher than the parents
 }
 
 MyOctant* MyOctant::GetParent()
@@ -249,6 +256,7 @@ bool MyOctant::IsLeaf()
 
 void MyOctant::Add() 
 {
+	// if the octant is not the leaf, recursively go into children until we get to the leaf
 	if (!IsLeaf()) // if m_pChild[0] != nullptr
 	{
 		for (GLuint i = 0; i < 8; i++)
@@ -258,6 +266,7 @@ void MyOctant::Add()
 	}
 	else
 	{
+		// go through each entity and change its dimension so that the entityManager only checks the ones in the same dimension
 		m_pEntityMngr = MyEntityManager::GetInstance();
 		uint iEntityCount = m_pEntityMngr->GetEntityCount();
 
@@ -280,6 +289,7 @@ bool MyOctant::ContainsMoreThan(uint a_Entities)
 
 void MyOctant::KillBranches()
 {
+	// should delete all the children
 	for each(MyOctant* child in m_pChild)
 	{
 		if (!child->IsLeaf()) { child->KillBranches(); }
